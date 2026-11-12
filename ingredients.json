@@ -1,0 +1,44 @@
+[
+  {
+    "id": "Bottom_Bun",
+    "label": "Bottom Bun",
+    "triangles": 3584,
+    "lift_m": 0
+  },
+  {
+    "id": "Patty",
+    "label": "Patty",
+    "triangles": 3840,
+    "lift_m": 0.025
+  },
+  {
+    "id": "Cheese",
+    "label": "Cheese",
+    "triangles": 4608,
+    "lift_m": 0.05
+  },
+  {
+    "id": "Lettuce",
+    "label": "Lettuce",
+    "triangles": 5184,
+    "lift_m": 0.075
+  },
+  {
+    "id": "Tomato",
+    "label": "Tomato",
+    "triangles": 2112,
+    "lift_m": 0.1
+  },
+  {
+    "id": "Onion",
+    "label": "Onion",
+    "triangles": 1536,
+    "lift_m": 0.125
+  },
+  {
+    "id": "Top_Bun",
+    "label": "Top Bun",
+    "triangles": 7296,
+    "lift_m": 0.15
+  }
+]

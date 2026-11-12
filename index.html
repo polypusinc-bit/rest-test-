@@ -6,9 +6,9 @@
   <meta name="theme-color" content="#f7f4ed">
   <meta name="description" content="Explore The Test Kitchen's cheeseburger in 3D and place a life-size prototype on your table in augmented reality.">
   <title>Cheeseburger in 3D · The Test Kitchen</title>
-  <link rel="stylesheet" href="styles.css?v=live-ar-1">
+  <link rel="stylesheet" href="styles.css?v=layers-2">
   <script type="module" src="model-viewer.min.js"></script>
-  <script type="module" src="viewer.js?v=live-ar-1"></script>
+  <script type="module" src="viewer.js?v=layers-2"></script>
 </head>
 <body>
   <header class="site-header">
@@ -19,18 +19,18 @@
     <section class="experience" aria-labelledby="burger-title">
       <div class="viewer-panel">
         <div class="viewer-topline"><span class="eyebrow">A closer look</span><span class="badge">Interactive 3D</span></div>
-        <model-viewer class="is-loading" id="burger" src="cheeseburger.glb" ios-src="burger-interactive.usdz"
+        <model-viewer class="is-loading" id="burger" src="burger-layers.glb" ios-src="burger-customizable.usdz" animation-name="Separate layers"
           alt="A sesame-bun cheeseburger with beef, cheese, lettuce, tomato and red onion. Drag or use arrow keys to rotate."
           camera-controls touch-action="pan-y" shadow-intensity="1" shadow-softness="1"
-          exposure="1" camera-orbit="30deg 70deg 0.38m" min-camera-orbit="auto 15deg 0.22m" max-camera-orbit="auto 90deg 0.6m"
+          exposure="1" camera-orbit="30deg 75deg 0.65m" camera-target="0m 0.12m 0m" min-camera-orbit="auto 15deg 0.3m" max-camera-orbit="auto 90deg 1m"
           ar ar-modes="webxr quick-look" ar-scale="fixed" ar-placement="floor" xr-environment loading="eager">
           <button slot="ar-button" class="native-ar-button" disabled>View on your table <span aria-hidden="true">↗</span></button>
           <div slot="progress-bar" class="loading-indicator" id="loading-indicator"><span class="spinner" aria-hidden="true"></span> Preparing your burger…</div>
           <div class="ar-customizer" id="ar-customizer" role="group" aria-label="Customize your burger in AR">
-            <div><strong>Make it yours</strong><p id="ar-cheese-status" role="status" aria-live="polite">Cheese included</p></div>
-            <button id="ar-toggle-cheese" type="button" disabled>Remove Cheese</button>
-            <p class="ar-placement-hint">Move your phone slowly to find the table, then tap to place.</p>
-            <p class="ar-tracking-hint">Finding your table again… Move your phone slowly.</p>
+            <div class="ar-customizer-title"><strong>Your burger, your way</strong><p id="ar-recipe-status" role="status" aria-live="polite">All ingredients included</p></div>
+            <div class="ingredient-grid"><button type="button" data-ingredient="Top_Bun" aria-pressed="true" disabled><span>Top bun</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Onion" aria-pressed="true" disabled><span>Red onion</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Tomato" aria-pressed="true" disabled><span>Tomato</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Lettuce" aria-pressed="true" disabled><span>Lettuce</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Cheese" aria-pressed="true" disabled><span>Cheese</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Patty" aria-pressed="true" disabled><span>Beef patty</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Bottom_Bun" aria-pressed="true" disabled><span>Bottom bun</span><span class="ingredient-state">Included</span></button></div>
+            <div class="recipe-actions"><button type="button" data-layout disabled>Separate layers</button><button type="button" data-reset disabled>Reset recipe</button></div>
+            <p class="ar-placement-hint">Move your phone slowly to find the table, then tap to place.</p><p class="ar-tracking-hint">Finding your table again… Move your phone slowly.</p>
           </div>
         </model-viewer>
         <div class="viewer-bottomline"><span>Drag to rotate · Pinch to zoom</span><button class="text-button" id="reset-view" disabled>Reset view ↺</button></div>
@@ -39,28 +39,31 @@
         <p class="eyebrow">The classics / 01</p>
         <h1 id="burger-title">The<br><em>Cheeseburger.</em></h1>
         <p class="description">Golden sesame bun. A beef patty, melted cheese, fresh lettuce, tomato and a little red onion. Take a look around before you take a bite.</p>
-        <div class="ingredients" aria-label="Illustrated ingredients"><span>Beef</span><span id="cheese-chip">Cheese</span><span>Lettuce</span><span>Tomato</span><span>Red onion</span></div>
-        <div class="customizer"><div><strong>Make it yours</strong><p id="cheese-status" role="status" aria-live="polite">Cheese included</p></div><button id="toggle-cheese" type="button" aria-pressed="false" aria-label="Remove cheese" disabled>Remove Cheese</button></div>
-        <p class="customizer-note">Change cheese here or while viewing your burger in AR.</p>
-        <div class="size-note"><span class="size-icon" aria-hidden="true">↔</span><div><strong>Life-size prototype</strong><p>13.4 cm wide · 10.3 cm tall<br>Fixed scale in AR. Illustrative portions.</p></div></div>
+        <div class="recipe-customizer"><div class="recipe-heading"><strong>Build your burger</strong><p id="recipe-status" role="status" aria-live="polite">All ingredients included</p></div>
+          <div class="ingredient-grid"><button type="button" data-ingredient="Top_Bun" aria-pressed="true" disabled><span>Top bun</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Onion" aria-pressed="true" disabled><span>Red onion</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Tomato" aria-pressed="true" disabled><span>Tomato</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Lettuce" aria-pressed="true" disabled><span>Lettuce</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Cheese" aria-pressed="true" disabled><span>Cheese</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Patty" aria-pressed="true" disabled><span>Beef patty</span><span class="ingredient-state">Included</span></button><button type="button" data-ingredient="Bottom_Bun" aria-pressed="true" disabled><span>Bottom bun</span><span class="ingredient-state">Included</span></button></div>
+          <div class="recipe-actions"><button type="button" data-layout disabled>Separate layers</button><button type="button" data-reset disabled>Reset recipe</button></div>
+        </div>
+        <p class="customizer-note">Tap an ingredient to add or remove it. The layers lift apart so you can see your choices. Tap Stack burger to bring them together.</p>
+        <div class="size-note"><span class="size-icon" aria-hidden="true">↔</span><div><strong>Life-size prototype</strong><p>13.4 cm wide · 10.3 cm tall<br>Stacked dimensions. Fixed scale in AR.</p></div></div>
         <button id="launch-ar" class="primary-button" disabled>Loading 3D model…</button>
-        <p class="ar-instructions"><strong>Customize through your camera</strong><br>Android: use the Add/Remove Cheese button in AR.<br>iPhone: open the AR viewer’s configuration menu, then choose <strong>Cheese → With Cheese / No Cheese</strong>.</p>
+        <p class="ar-instructions"><strong>Customize through your camera</strong><br>Android: use ingredient buttons and Separate layers in the camera view.<br>iPhone: open the AR configuration menu. Choose <strong>Included / Removed</strong> for each ingredient, and <strong>Arrangement → Separated / Stacked</strong>.</p>
         <p id="viewer-status" class="status" role="status" aria-live="polite">The model is loading. You’ll be able to rotate it here.</p>
+        <button id="retry-ios" class="text-button" hidden>Retry iPhone AR</button>
         <button id="retry" class="text-button" hidden>Try loading again</button>
         <div class="phone-note" id="phone-note" hidden><strong>Try it on your phone</strong><p>Scan your existing menu QR code, then open this cheeseburger viewer. Use Safari on iPhone or Chrome on an AR-compatible Android phone.</p></div>
-        <noscript><p class="error">JavaScript is needed for interactive 3D. On iPhone, you can <a rel="ar" href="burger-interactive.usdz#allowsContentScaling=0">open the AR model directly<img alt="" width="1" height="1" src="ar-icon.svg"></a>.</p></noscript>
+        <noscript><p class="error">JavaScript is needed for interactive 3D. On iPhone, you can <a rel="ar" href="burger-customizable.usdz#allowsContentScaling=0">open the AR model directly<img alt="" width="1" height="1" src="ar-icon.svg"></a>.</p></noscript>
       </div>
     </section>
     <section class="how-to" aria-labelledby="how-title">
       <div><p class="eyebrow">From screen to table</p><h2 id="how-title">Make room for<br>one more burger.</h2></div>
       <ol>
         <li><span class="step">01</span><div><h3>Open on your phone</h3><p>Use Safari on iPhone or Chrome on Android. Some older phones support 3D viewing only.</p></div></li>
-        <li><span class="step">02</span><div><h3>Tap “View on your table”</h3><p>Allow camera access if asked. On iPhone, choose AR if the viewer opens in Object mode. Open the configuration menu to change Cheese.</p></div></li>
+        <li><span class="step">02</span><div><h3>Tap “View on your table”</h3><p>Allow camera access if asked. On iPhone, choose AR if the viewer opens in Object mode. Open the configuration menu to choose ingredients and Arrangement.</p></div></li>
         <li><span class="step">03</span><div><h3>Find a clear spot</h3><p>Move your phone slowly over a well-lit table. Follow the placement prompt, then walk around your burger.</p></div></li>
       </ol>
     </section>
-    <details class="help"><summary>AR didn’t open?</summary><p>Open this page in Safari or Chrome instead of a social app’s browser. Android requires Chrome with WebXR and Google Play Services for AR on a supported device. Update iOS if the iPhone configuration menu is unavailable. If camera placement is unavailable, you can still rotate the burger in 3D.</p><p>iPhone fallback: <a id="ios-fallback" rel="ar" href="burger-interactive.usdz#allowsContentScaling=0"><img src="ar-icon.svg" width="18" height="18" alt=""> Open the iPhone AR file</a>.</p></details>
+    <details class="help"><summary>AR didn’t open?</summary><p>Open this page in Safari or Chrome instead of a social app’s browser. Android requires Chrome with WebXR and Google Play Services for AR on a supported device. Update iOS if the iPhone configuration menu is unavailable. If camera placement is unavailable, you can still rotate the burger in 3D.</p><p>iPhone fallback: <a id="ios-fallback" rel="ar" href="burger-customizable.usdz#allowsContentScaling=0"><img src="ar-icon.svg" width="18" height="18" alt=""> Open the iPhone AR file</a>.</p></details>
   </main>
-  <footer><p><strong>The Test Kitchen</strong> · Fictional restaurant / AR prototype</p><p>Model is illustrative and differs from the menu photo. Change cheese inside AR: an on-screen button on supported Android phones, or the Cheese configuration menu on iPhone. iPhone AR selections stay in that viewer and do not update this webpage.</p><p><a href="https://grab3d.com/models/food/burger/">Burger model by Grab3D</a> · <a href="MODEL-LICENSE.txt">CC0 model license</a> · Powered by <a href="https://modelviewer.dev/">Google &lt;model-viewer&gt;</a></p></footer>
+  <footer><p><strong>The Test Kitchen</strong> · Fictional restaurant / AR prototype</p><p>Model is illustrative and differs from the menu photo. Customize all seven ingredients. Layers animate on the webpage and Android WebXR. iPhone uses configuration choices for ingredients and separated/stacked views; its AR selections do not update this webpage.</p><p><a href="https://grab3d.com/models/food/burger/">Burger model by Grab3D</a> · <a href="MODEL-LICENSE.txt">CC0 model license</a> · Powered by <a href="https://modelviewer.dev/">Google &lt;model-viewer&gt;</a></p></footer>
 </body>
 </html>

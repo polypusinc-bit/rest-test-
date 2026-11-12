@@ -1,143 +1,117 @@
-const viewer = document.querySelector('#burger');
-const launch = document.querySelector('#launch-ar');
-const nativeAR = document.querySelector('.native-ar-button');
-const status = document.querySelector('#viewer-status');
-const loading = document.querySelector('#loading-indicator');
-const retry = document.querySelector('#retry');
-const phoneNote = document.querySelector('#phone-note');
-const reset = document.querySelector('#reset-view');
-const toggle = document.querySelector('#toggle-cheese');
-const cheeseStatus = document.querySelector('#cheese-status');
-const cheeseChip = document.querySelector('#cheese-chip');
-const iosFallback = document.querySelector('#ios-fallback');
-const arToggle = document.querySelector('#ar-toggle-cheese');
-const arCheeseStatus = document.querySelector('#ar-cheese-status');
-const arCustomizer = document.querySelector('#ar-customizer');
-const variants = {
-  withCheese: { glb: 'cheeseburger.glb', usdz: 'burger-interactive.usdz', label: 'Cheese included' },
-  withoutCheese: { glb: 'burger-no-cheese.glb', usdz: 'burger-interactive-no-cheese.usdz', label: 'No cheese' }
-};
-let selected = new URL(location.href).searchParams.get('cheese') === 'off' ? 'withoutCheese' : 'withCheese';
-let loaded = false;
-let launching = false;
-let presenting = false;
-let failed = false;
-let loadTimer;
-
-function refreshControls() {
-  const supported = loaded && viewer.canActivateAR;
-  launch.disabled = !supported || launching || presenting;
-  nativeAR.disabled = !supported || launching || presenting;
-  toggle.disabled = (!loaded && !failed) || launching || presenting;
-  arToggle.disabled = (!loaded && !failed) || !presenting;
-  reset.disabled = !loaded;
-  launch.textContent = failed ? 'Model unavailable' : launching ? 'Opening AR…' : supported ? 'View on your table  ↗' : loaded ? 'AR requires a compatible phone' : 'Loading your burger…';
-  phoneNote.hidden = !loaded || supported;
-  viewer.classList.toggle('is-loading', !loaded);
-  if (loaded && !launching && !presenting) {
-    iosFallback.href = `${variants[selected].usdz}#allowsContentScaling=0`;
-    iosFallback.removeAttribute('aria-disabled');
-  } else {
-    iosFallback.removeAttribute('href');
-    iosFallback.setAttribute('aria-disabled', 'true');
-  }
+import { readStoredZip, makeRecipePackage } from './recipe-package.js?v=layers-1';
+const viewer=document.querySelector('#burger');
+const launch=document.querySelector('#launch-ar');
+const nativeAR=document.querySelector('.native-ar-button');
+const status=document.querySelector('#viewer-status');
+const loading=document.querySelector('#loading-indicator');
+const retry=document.querySelector('#retry');
+const phoneNote=document.querySelector('#phone-note');
+const iosFallback=document.querySelector('#ios-fallback');
+const buttons=[...document.querySelectorAll('[data-ingredient]')];
+const layouts=[...document.querySelectorAll('[data-layout]')];
+const resets=[...document.querySelectorAll('[data-reset]')];
+const ids=['Bottom_Bun','Patty','Cheese','Lettuce','Tomato','Onion','Top_Bun'];
+const names={Bottom_Bun:'Bottom bun',Patty:'Beef patty',Cheese:'Cheese',Lettuce:'Lettuce',Tomato:'Tomato',Onion:'Red onion',Top_Bun:'Top bun'};
+const query=new URL(location.href).searchParams;
+const omitted=new Set((query.get('omit')||'').split(','));
+if(query.get('cheese')==='off') omitted.add('Cheese');
+const recipe=Object.fromEntries(ids.map(id=>[id,!omitted.has(id)]));
+let separated=query.get('layers')==='apart';
+let loaded=false,failed=false,presenting=false,launching=false,animating=false;
+let iosReady=false,iosError=false,packageEntries=null,blobUrl=null;
+let animationTimer,packageTimer;
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function saveSelection(){
+ const url=new URL(location.href);url.searchParams.delete('cheese');
+ const off=ids.filter(id=>!recipe[id]);
+ if(off.length)url.searchParams.set('omit',off.join(','));else url.searchParams.delete('omit');
+ if(separated)url.searchParams.set('layers','apart');else url.searchParams.delete('layers');
+ history.replaceState(null,'',url);
 }
-
-function renderSelection() {
-  const removed = selected === 'withoutCheese';
-  toggle.textContent = removed ? 'Add Cheese' : 'Remove Cheese';
-  arToggle.textContent = toggle.textContent;
-  arToggle.setAttribute('aria-label', removed ? 'Add cheese' : 'Remove cheese');
-  toggle.setAttribute('aria-label', removed ? 'Add cheese' : 'Remove cheese');
-  toggle.setAttribute('aria-pressed', String(removed));
-  cheeseChip.classList.toggle('omitted', removed);
-  cheeseChip.setAttribute('aria-label', removed ? 'Cheese removed' : 'Cheese included');
-  cheeseStatus.textContent = `${variants[selected].label}${loaded ? '' : failed ? ' · preview unavailable' : ' · updating preview…'}`;
-  arCheeseStatus.textContent = cheeseStatus.textContent;
-  viewer.alt = `A sesame-bun burger with beef, ${removed ? 'no cheese, ' : 'cheese, '}lettuce, tomato and red onion. Drag or use arrow keys to rotate.`;
+function render(){
+ const ready=loaded&&(!isIOS||iosReady);
+ for(const b of buttons){const id=b.dataset.ingredient;b.disabled=!loaded||launching;b.setAttribute('aria-pressed',String(recipe[id]));b.setAttribute('aria-label',`${recipe[id]?'Remove':'Add'} ${names[id].toLowerCase()}`);b.querySelector('.ingredient-state').textContent=recipe[id]?'Included':'Removed';}
+ for(const b of layouts){b.disabled=!loaded||launching;b.textContent=separated?'Stack burger':'Separate layers';b.setAttribute('aria-pressed',String(separated));}
+ for(const b of resets)b.disabled=!loaded||launching;
+ const count=ids.filter(id=>recipe[id]).length;
+ const summary=count===0?'All ingredients removed — add one below.':`${count} of 7 ingredients · ${separated?'layers separated':'stacked'}`;
+ document.querySelector('#recipe-status').textContent=summary;
+ document.querySelector('#ar-recipe-status').textContent=summary;
+ launch.disabled=!ready||!viewer.canActivateAR||launching||presenting;
+ nativeAR.disabled=launch.disabled;
+ launch.textContent=failed?'Model unavailable':!loaded?'Loading your burger…':isIOS&&!iosReady?(iosError?'AR file unavailable':'Preparing your AR recipe…'):launching?'Opening AR…':viewer.canActivateAR?'View on your table  ↗':'AR requires a compatible phone';
+ viewer.classList.toggle('is-loading',!loaded);
+ phoneNote.hidden=!loaded||viewer.canActivateAR;
+ document.querySelector('#reset-view').disabled=!loaded;
+ if(iosReady&&!launching&&!presenting){iosFallback.href=`${blobUrl}#allowsContentScaling=0`;iosFallback.removeAttribute('aria-disabled');}
+ else{iosFallback.removeAttribute('href');iosFallback.setAttribute('aria-disabled','true');}
+ document.querySelector('#retry-ios').hidden=!iosError;
+ viewer.alt=`Custom burger with ${ids.filter(id=>recipe[id]).map(id=>names[id]).join(', ')||'all ingredients removed'}. ${separated?'Layers separated.':'Stacked.'} Drag to rotate.`;
 }
-
-function beginLoad() {
-  loaded = false;
-  failed = false;
-  launching = false;
-  loading.hidden = false;
-  retry.hidden = true;
-  status.textContent = 'Updating the 3D preview and AR selection…';
-  refreshControls();
-  renderSelection();
-  // WebXR stays in the same session while the model changes. Quick Look
-  // gets both recipes plus a default matching the webpage selection.
-  viewer.setAttribute('ios-src', variants[selected].usdz);
-  viewer.setAttribute('src', variants[selected].glb);
-  clearTimeout(loadTimer);
-  loadTimer = setTimeout(() => {
-    if (!customElements.get('model-viewer')) showError();
-    else if (!loaded) {
-      status.textContent = 'Still loading your selection. Check your connection or try again.';
-      retry.hidden = false;
-    }
-  }, 20000);
+function applyIngredients(){
+ for(const id of ids){const material=viewer.model.materials.find(m=>m.name===id);if(!material)throw new Error(`Missing ${id} layer`);material.pbrMetallicRoughness.setBaseColorFactor([1,1,1,recipe[id]?1:0]);}
 }
-
-function showError() {
-  clearTimeout(loadTimer);
-  loaded = false;
-  failed = true;
-  loading.hidden = true;
-  retry.hidden = false;
-  refreshControls();
-  renderSelection();
-  status.textContent = 'Your selected burger could not load. Try again or change the cheese selection. AR is paused until the correct model loads.';
+function finishMotion(){
+ viewer.pause();viewer.currentTime=separated?1:0;animating=false;applyIngredients();
 }
-
-viewer.addEventListener('load', event => {
-  const expected = new URL(variants[selected].glb, document.baseURI).href;
-  if (event.detail?.url && new URL(event.detail.url, document.baseURI).href !== expected) return;
-  clearTimeout(loadTimer);
-  loaded = true;
-  failed = false;
-  loading.hidden = true;
-  retry.hidden = true;
-  refreshControls();
-  renderSelection();
-  status.textContent = viewer.canActivateAR ? `${variants[selected].label}. Ready to view on your table.` : `${variants[selected].label}. Drag to explore in 3D; open on a compatible phone for AR.`;
-});
-viewer.addEventListener('error', showError);
-viewer.addEventListener('ar-status', event => {
-  const state = event.detail.status;
-  presenting = state === 'session-started' || state === 'object-placed';
-  if (presenting || state === 'failed' || state === 'not-presenting') launching = false;
-  refreshControls();
-  if (state === 'failed') status.textContent = 'AR could not start. Open “AR didn’t open?” below for help.';
-});
-function changeCheese() {
-  selected = selected === 'withCheese' ? 'withoutCheese' : 'withCheese';
-  const url = new URL(location.href);
-  if (selected === 'withoutCheese') url.searchParams.set('cheese', 'off');
-  else url.searchParams.delete('cheese');
-  history.replaceState(null, '', url);
-  beginLoad();
+function moveLayers(){
+ clearTimeout(animationTimer);
+ const target=separated?1:0,from=Math.max(0,Math.min(1,viewer.currentTime||0));
+ if(reducedMotion||Math.abs(target-from)<.01){finishMotion();return;}
+ animating=true;
+ // Play through model-viewer's own XR render loop, so animation runs in camera AR too.
+ viewer.timeScale=target>from?1.6:-1.6;viewer.play({repetitions:1});viewer.currentTime=from;
+ animationTimer=setTimeout(finishMotion,Math.abs(target-from)/1.6*1000+30);
 }
-toggle.addEventListener('click', () => { if (!toggle.disabled) changeCheese(); });
-arToggle.addEventListener('click', () => { if (!arToggle.disabled) changeCheese(); });
-// A tap on a control must not also place or move the burger.
-arCustomizer.addEventListener('beforexrselect', event => event.preventDefault());
-launch.addEventListener('click', async () => {
-  if (!loaded || !viewer.canActivateAR || launching || presenting) return;
-  launching = true;
-  refreshControls();
-  try { await viewer.activateAR(); }
-  catch { status.textContent = 'AR could not start. Try Safari on iPhone or Chrome on a supported Android phone.'; }
-  finally { launching = false; refreshControls(); }
+function queuePackage(){
+ iosReady=false;iosError=false;clearTimeout(packageTimer);render();
+ if(!packageEntries)return;
+ packageTimer=setTimeout(()=>{
+  try{
+   const bytes=makeRecipePackage(packageEntries,recipe,separated);
+   const next=URL.createObjectURL(new Blob([bytes],{type:'model/vnd.usdz+zip'}));
+   viewer.setAttribute('ios-src',next);
+   const previous=blobUrl;blobUrl=next;iosReady=true;if(previous)URL.revokeObjectURL(previous);
+  }catch(error){iosError=true;console.error(error);}
+  render();
+ },100);
+}
+async function loadPackage(){
+ iosError=false;render();
+ try{const response=await fetch('burger-customizable.usdz');if(!response.ok)throw new Error('AR download failed');packageEntries=readStoredZip(await response.arrayBuffer());queuePackage();}
+ catch(error){iosError=true;status.textContent='The iPhone AR file could not load. You can still customize in 3D; use Retry iPhone AR below.';render();}
+}
+function choose(id){
+ if(!loaded||launching)return;
+ recipe[id]=!recipe[id];
+ // Lift before hiding a removed layer; restore added layers immediately.
+ if(recipe[id])applyIngredients();
+ separated=true;saveSelection();moveLayers();queuePackage();
+}
+for(const b of buttons)b.addEventListener('click',()=>choose(b.dataset.ingredient));
+for(const b of layouts)b.addEventListener('click',()=>{if(!loaded||launching)return;separated=!separated;saveSelection();moveLayers();queuePackage();});
+for(const b of resets)b.addEventListener('click',()=>{if(!loaded||launching)return;for(const id of ids)recipe[id]=true;separated=false;applyIngredients();saveSelection();moveLayers();queuePackage();});
+document.querySelector('#ar-customizer').addEventListener('beforexrselect',event=>event.preventDefault());
+viewer.addEventListener('load',()=>{
+ try{viewer.pause();viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;loading.hidden=true;retry.hidden=true;render();status.textContent='Choose ingredients to lift the layers apart. Stack them again whenever you’re ready.';}
+ catch(error){showError();console.error(error);}
 });
-reset.addEventListener('click', () => {
-  viewer.cameraOrbit = '30deg 70deg 0.38m';
-  viewer.cameraTarget = 'auto auto auto';
-  viewer.fieldOfView = 'auto';
+function showError(){loaded=false;failed=true;loading.hidden=true;retry.hidden=false;status.textContent='The burger could not load. Check your connection and try again.';render();}
+viewer.addEventListener('error',showError);
+viewer.addEventListener('ar-status',event=>{
+ const state=event.detail.status;presenting=state==='session-started'||state==='object-placed';
+ if(presenting||state==='failed'||state==='not-presenting')launching=false;
+ if(state==='failed')status.textContent='AR could not start. Open “AR didn’t open?” for help.';
+ render();
 });
-retry.addEventListener('click', () => location.reload());
-document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) { launching = false; refreshControls(); }
+launch.addEventListener('click',async()=>{
+ if(launch.disabled)return;launching=true;render();
+ try{await viewer.activateAR();}catch{status.textContent='AR could not start. Try Safari on iPhone or Chrome on a supported Android phone.';}finally{launching=false;render();}
 });
-beginLoad();
+document.querySelector('#reset-view').addEventListener('click',()=>{viewer.cameraOrbit='30deg 75deg 0.65m';viewer.cameraTarget='0m 0.12m 0m';viewer.fieldOfView='auto';});
+retry.addEventListener('click',()=>location.reload());
+document.querySelector('#retry-ios').addEventListener('click',loadPackage);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){launching=false;if(animating)finishMotion();render();}});
+render();loadPackage();
+setTimeout(()=>{if(!loaded&&!failed){status.textContent='Still loading the burger. Check your connection or try again.';retry.hidden=false;}},20000);
