@@ -10,9 +10,12 @@ const toggle = document.querySelector('#toggle-cheese');
 const cheeseStatus = document.querySelector('#cheese-status');
 const cheeseChip = document.querySelector('#cheese-chip');
 const iosFallback = document.querySelector('#ios-fallback');
+const arToggle = document.querySelector('#ar-toggle-cheese');
+const arCheeseStatus = document.querySelector('#ar-cheese-status');
+const arCustomizer = document.querySelector('#ar-customizer');
 const variants = {
-  withCheese: { glb: 'cheeseburger.glb', usdz: 'cheeseburger.usdz', label: 'Cheese included' },
-  withoutCheese: { glb: 'burger-no-cheese.glb', usdz: 'burger-no-cheese.usdz', label: 'No cheese' }
+  withCheese: { glb: 'cheeseburger.glb', usdz: 'burger-interactive.usdz', label: 'Cheese included' },
+  withoutCheese: { glb: 'burger-no-cheese.glb', usdz: 'burger-interactive-no-cheese.usdz', label: 'No cheese' }
 };
 let selected = new URL(location.href).searchParams.get('cheese') === 'off' ? 'withoutCheese' : 'withCheese';
 let loaded = false;
@@ -26,6 +29,7 @@ function refreshControls() {
   launch.disabled = !supported || launching || presenting;
   nativeAR.disabled = !supported || launching || presenting;
   toggle.disabled = (!loaded && !failed) || launching || presenting;
+  arToggle.disabled = (!loaded && !failed) || !presenting;
   reset.disabled = !loaded;
   launch.textContent = failed ? 'Model unavailable' : launching ? 'Opening AR…' : supported ? 'View on your table  ↗' : loaded ? 'AR requires a compatible phone' : 'Loading your burger…';
   phoneNote.hidden = !loaded || supported;
@@ -42,11 +46,14 @@ function refreshControls() {
 function renderSelection() {
   const removed = selected === 'withoutCheese';
   toggle.textContent = removed ? 'Add Cheese' : 'Remove Cheese';
+  arToggle.textContent = toggle.textContent;
+  arToggle.setAttribute('aria-label', removed ? 'Add cheese' : 'Remove cheese');
   toggle.setAttribute('aria-label', removed ? 'Add cheese' : 'Remove cheese');
   toggle.setAttribute('aria-pressed', String(removed));
   cheeseChip.classList.toggle('omitted', removed);
   cheeseChip.setAttribute('aria-label', removed ? 'Cheese removed' : 'Cheese included');
   cheeseStatus.textContent = `${variants[selected].label}${loaded ? '' : failed ? ' · preview unavailable' : ' · updating preview…'}`;
+  arCheeseStatus.textContent = cheeseStatus.textContent;
   viewer.alt = `A sesame-bun burger with beef, ${removed ? 'no cheese, ' : 'cheese, '}lettuce, tomato and red onion. Drag or use arrow keys to rotate.`;
 }
 
@@ -59,8 +66,8 @@ function beginLoad() {
   status.textContent = 'Updating the 3D preview and AR selection…';
   refreshControls();
   renderSelection();
-  // Both native viewers receive a real, matching file for the chosen recipe.
-  // Browser-only material opacity changes would not carry over to Scene Viewer.
+  // WebXR stays in the same session while the model changes. Quick Look
+  // gets both recipes plus a default matching the webpage selection.
   viewer.setAttribute('ios-src', variants[selected].usdz);
   viewer.setAttribute('src', variants[selected].glb);
   clearTimeout(loadTimer);
@@ -100,19 +107,22 @@ viewer.addEventListener('error', showError);
 viewer.addEventListener('ar-status', event => {
   const state = event.detail.status;
   presenting = state === 'session-started' || state === 'object-placed';
-  if (state === 'failed' || state === 'not-presenting') launching = false;
+  if (presenting || state === 'failed' || state === 'not-presenting') launching = false;
   refreshControls();
   if (state === 'failed') status.textContent = 'AR could not start. Open “AR didn’t open?” below for help.';
 });
-toggle.addEventListener('click', () => {
-  if (toggle.disabled) return;
+function changeCheese() {
   selected = selected === 'withCheese' ? 'withoutCheese' : 'withCheese';
   const url = new URL(location.href);
   if (selected === 'withoutCheese') url.searchParams.set('cheese', 'off');
   else url.searchParams.delete('cheese');
   history.replaceState(null, '', url);
   beginLoad();
-});
+}
+toggle.addEventListener('click', () => { if (!toggle.disabled) changeCheese(); });
+arToggle.addEventListener('click', () => { if (!arToggle.disabled) changeCheese(); });
+// A tap on a control must not also place or move the burger.
+arCustomizer.addEventListener('beforexrselect', event => event.preventDefault());
 launch.addEventListener('click', async () => {
   if (!loaded || !viewer.canActivateAR || launching || presenting) return;
   launching = true;

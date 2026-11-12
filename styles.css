@@ -7,3 +7,12 @@
 
 .customizer{display:flex;align-items:center;justify-content:space-between;gap:16px;border:1px solid #cbd3c4;background:#eef0e6;border-radius:6px;padding:17px 18px;margin-top:24px}.customizer strong{font-size:13px}.customizer p{font-size:12px;color:var(--muted);margin:5px 0 0}.customizer button{font-size:13px;font-weight:600;background:transparent;border:1px solid var(--green);color:var(--green);padding:12px 16px;border-radius:4px;min-height:44px;white-space:nowrap}.customizer button:hover:not(:disabled){background:#dde4d5}.customizer button[aria-pressed="true"]{background:var(--green);color:white}.customizer-note{font-size:11px;color:var(--muted);line-height:1.6;margin:8px 0 18px}#cheese-chip.omitted{text-decoration:line-through;opacity:.5}.is-loading .native-ar-button{display:none!important}#ios-fallback[aria-disabled="true"]{pointer-events:none;opacity:.5}
 .customizer button[aria-pressed="true"]:hover:not(:disabled){background:#173d29}
+
+.ar-instructions{font-size:12px;line-height:1.7;color:var(--muted);margin:15px 0}.ar-instructions strong{color:var(--green)}
+.ar-customizer{display:none;position:absolute;left:16px;right:16px;bottom:max(24px,env(safe-area-inset-bottom));max-width:460px;margin:auto;padding:18px;border-radius:12px;background:#f7f4edf5;color:#253c31;box-shadow:0 4px 24px #0003;grid-template-columns:1fr auto;gap:12px;align-items:center;pointer-events:auto}
+.ar-customizer strong{font-size:16px}.ar-customizer p{font-size:13px;line-height:1.5;margin:5px 0 0}.ar-customizer button{border:0;border-radius:6px;background:#234d38;color:white;font-size:16px;font-weight:600;min-height:48px;padding:12px 16px}.ar-customizer .ar-placement-hint,.ar-customizer .ar-tracking-hint{grid-column:1 / -1;margin:0}.ar-tracking-hint{display:none}
+model-viewer[ar-status="session-started"] .ar-customizer,model-viewer[ar-status="object-placed"] .ar-customizer{display:grid}
+model-viewer[ar-status="object-placed"] .ar-placement-hint{display:none}
+model-viewer[ar-tracking="not-tracking"] .ar-tracking-hint{display:block}
+model-viewer[ar-tracking="not-tracking"] .ar-placement-hint{display:none}
+model-viewer[ar-status="session-started"] .loading-indicator,model-viewer[ar-status="object-placed"] .loading-indicator{display:none}

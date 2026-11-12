@@ -12,6 +12,7 @@ Google Sites menu: https://sites.google.com/view/the-test-kitchen-menu-demo
 - `cheeseburger.glb`: browser / Android model.
 - `cheeseburger.usdz`: matching iPhone Quick Look model.
 - `burger-no-cheese.glb`, `burger-no-cheese.usdz`: matching variants with the cheese geometry removed.
+- `burger-interactive.usdz`, `burger-interactive-no-cheese.usdz`: self-contained iPhone Quick Look files with a Cheese configuration menu; the default matches the webpage choice.
 - `model-viewer.min.js`: pinned Google model-viewer 4.1.0.
 - `MODEL-LICENSE.txt`, `source-manifest.json`: the model source license and metadata.
 - `MODEL-VIEWER-LICENSE.txt`: the viewer library's Apache 2.0 license.
@@ -22,7 +23,13 @@ The model is from [Grab3D](https://grab3d.com/models/food/burger/), provided und
 
 The GLB's vertex bounds measure **0.134265 m wide × 0.102726 m high × 0.132218 m deep**. Its lowest vertex is at Y=0. The source includes the matching USDZ. `ar-scale="fixed"` requests that AR viewers retain the authored physical scale. These are illustrative prototype dimensions, not measurements of a real restaurant portion.
 
-**Remove Cheese** switches to the no-cheese model; **Add Cheese** restores the original. Both the browser/Android GLB and iPhone USDZ change together. AR and its fallback link stay disabled until the selected preview loads. The selection is retained in the URL (`?cheese=off`) across reloads. Return to the browser to change ingredients before opening native AR again.
+**Remove Cheese** switches to the no-cheese model; **Add Cheese** restores the original. The selection is retained in the URL (`?cheese=off`) across reloads.
+
+**Android Chrome:** WebXR keeps the camera session open and shows an Add/Remove Cheese control. The model changes within that session, following Google's model-switching AR example. Controls lock while the selected model loads. Overlay taps suppress `beforexrselect` so they do not also place/move the burger. Scene Viewer fallback is deliberately excluded because it cannot show these live controls.
+
+**iPhone Safari:** Quick Look receives a self-contained USDZ with `Cheese` variants (`With_Cheese` / `No_Cheese`) on its default prim. Open the native configuration menu to change cheese without leaving the viewer. The webpage choice selects the initial configuration. Changes made within Quick Look remain in Quick Look and do not synchronize back to the webpage. Update iOS if the configuration menu is missing.
+
+Each interactive USDZ contains both original model layers and shared textures; there are no external file dependencies. Both default configurations were flattened with USD tooling to verify triangle counts and material bindings; ZIP alignment and integrity were checked. On-device camera placement and configuration switching still require physical phone testing.
 
 Although the source has one mesh and material, the cheese is a recoverable connected shell. The conversion removes exactly 4,608 of 28,160 triangles in each format. The remaining 23,552 triangles were compared across both formats by vertex position. The USDZ archive was checked for uncompressed entries, 64-byte alignment and successful USD parsing. Overall dimensions are unchanged.
 
@@ -58,8 +65,9 @@ Run this on both an iPhone (Safari) and an AR-compatible Android (Chrome):
 5. On iPhone, switch to **AR** if Quick Look opens in Object mode.
 6. Move the phone slowly over a well-lit, textured table. Place the burger.
 7. Compare the burger to a ruler: roughly 13.4 cm across and 10.3 cm tall. Check it sits on the surface and stays anchored as you move.
-8. Confirm the cheese is absent in AR. Return to the browser, tap **Add Cheese**, and reopen AR. Confirm the cheese returns. Test the direct iPhone link in the help section with each choice.
-9. Return to the browser and use Back to menu.
+8. Stay in AR. On Android, tap **Add Cheese** and **Remove Cheese** on the camera overlay. On iPhone, open the configuration menu and alternate **Cheese → With Cheese / No Cheese**. Confirm the geometry changes, the camera stays open and the burger stays on the table.
+9. On Android, tap the cheese control several times and confirm UI taps do not reposition the burger. Exit and re-enter AR. On iPhone, test both initial webpage selections and the direct help link; confirm each file exposes both choices.
+10. Return to the browser and use Back to menu.
 
 If AR is unavailable, the page still supports 3D. The help section includes a direct iPhone USDZ link. Camera placement, tracking, lighting, and native AR scale must be checked on physical phones; a desktop preview cannot verify them.
 
@@ -68,3 +76,6 @@ If AR is unavailable, the page still supports 3D. The help section includes a di
 - [Google model-viewer AR examples](https://modelviewer.dev/examples/augmentedreality/)
 - [Google model-viewer docs](https://modelviewer.dev/docs/)
 - [GitHub Pages publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
+
+- [Apple Quick Look configurations, including iOS](https://developer.apple.com/videos/play/wwdc2024/10105/)
+- [Apple USD variant authoring](https://developer.apple.com/documentation/usd/creating-usd-files-for-apple-devices)
