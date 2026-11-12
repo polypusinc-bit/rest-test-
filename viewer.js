@@ -60,9 +60,17 @@ function moveLayers(){
  const target=separated?1:0,from=Math.max(0,Math.min(1,viewer.currentTime||0));
  if(reducedMotion||Math.abs(target-from)<.01){finishMotion();return;}
  animating=true;
- // Play through model-viewer's own XR render loop, so animation runs in camera AR too.
- viewer.timeScale=target>from?1.6:-1.6;viewer.play({repetitions:1});viewer.currentTime=from;
- animationTimer=setTimeout(finishMotion,Math.abs(target-from)/1.6*1000+30);
+ const start=performance.now();
+ // Seek a paused action at unit speed. Repeated play/reverse calls in this
+ // library version can clamp the action and reset it during rapid choices.
+ // Timers update the pose; model-viewer's own renderer draws it in WebXR.
+ const step=()=>{
+  const progress=Math.min(1,(performance.now()-start)/550);
+  const eased=progress*progress*(3-2*progress);
+  viewer.currentTime=from+(target-from)*eased;
+  if(progress<1)animationTimer=setTimeout(step,16);else finishMotion();
+ };
+ step();
 }
 function queuePackage(){
  iosReady=false;iosError=false;clearTimeout(packageTimer);render();
@@ -94,7 +102,7 @@ for(const b of layouts)b.addEventListener('click',()=>{if(!loaded||launching)ret
 for(const b of resets)b.addEventListener('click',()=>{if(!loaded||launching)return;for(const id of ids)recipe[id]=true;separated=false;applyIngredients();saveSelection();moveLayers();queuePackage();});
 document.querySelector('#ar-customizer').addEventListener('beforexrselect',event=>event.preventDefault());
 viewer.addEventListener('load',()=>{
- try{viewer.pause();viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;loading.hidden=true;retry.hidden=true;render();status.textContent='Choose ingredients to lift the layers apart. Stack them again whenever you’re ready.';}
+ try{viewer.timeScale=1;viewer.play({repetitions:1});viewer.pause();viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;loading.hidden=true;retry.hidden=true;render();status.textContent='Choose ingredients to lift the layers apart. Stack them again whenever you’re ready.';}
  catch(error){showError();console.error(error);}
 });
 function showError(){loaded=false;failed=true;loading.hidden=true;retry.hidden=false;status.textContent='The burger could not load. Check your connection and try again.';render();}
