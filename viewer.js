@@ -1,70 +1,133 @@
 const viewer = document.querySelector('#burger');
 const launch = document.querySelector('#launch-ar');
+const nativeAR = document.querySelector('.native-ar-button');
 const status = document.querySelector('#viewer-status');
 const loading = document.querySelector('#loading-indicator');
 const retry = document.querySelector('#retry');
 const phoneNote = document.querySelector('#phone-note');
 const reset = document.querySelector('#reset-view');
+const toggle = document.querySelector('#toggle-cheese');
+const cheeseStatus = document.querySelector('#cheese-status');
+const cheeseChip = document.querySelector('#cheese-chip');
+const iosFallback = document.querySelector('#ios-fallback');
+const variants = {
+  withCheese: { glb: 'cheeseburger.glb', usdz: 'cheeseburger.usdz', label: 'Cheese included' },
+  withoutCheese: { glb: 'burger-no-cheese.glb', usdz: 'burger-no-cheese.usdz', label: 'No cheese' }
+};
+let selected = new URL(location.href).searchParams.get('cheese') === 'off' ? 'withoutCheese' : 'withCheese';
 let loaded = false;
 let launching = false;
+let presenting = false;
+let failed = false;
+let loadTimer;
 
-function refreshARAvailability() {
+function refreshControls() {
   const supported = loaded && viewer.canActivateAR;
-  launch.disabled = !supported || launching;
-  launch.textContent = launching ? 'Opening AR…' : supported ? 'View on your table  ↗' : loaded ? 'AR requires a compatible phone' : 'Loading 3D model…';
+  launch.disabled = !supported || launching || presenting;
+  nativeAR.disabled = !supported || launching || presenting;
+  toggle.disabled = (!loaded && !failed) || launching || presenting;
+  reset.disabled = !loaded;
+  launch.textContent = failed ? 'Model unavailable' : launching ? 'Opening AR…' : supported ? 'View on your table  ↗' : loaded ? 'AR requires a compatible phone' : 'Loading your burger…';
   phoneNote.hidden = !loaded || supported;
+  viewer.classList.toggle('is-loading', !loaded);
+  if (loaded && !launching && !presenting) {
+    iosFallback.href = `${variants[selected].usdz}#allowsContentScaling=0`;
+    iosFallback.removeAttribute('aria-disabled');
+  } else {
+    iosFallback.removeAttribute('href');
+    iosFallback.setAttribute('aria-disabled', 'true');
+  }
+}
+
+function renderSelection() {
+  const removed = selected === 'withoutCheese';
+  toggle.textContent = removed ? 'Add Cheese' : 'Remove Cheese';
+  toggle.setAttribute('aria-label', removed ? 'Add cheese' : 'Remove cheese');
+  toggle.setAttribute('aria-pressed', String(removed));
+  cheeseChip.classList.toggle('omitted', removed);
+  cheeseChip.setAttribute('aria-label', removed ? 'Cheese removed' : 'Cheese included');
+  cheeseStatus.textContent = `${variants[selected].label}${loaded ? '' : failed ? ' · preview unavailable' : ' · updating preview…'}`;
+  viewer.alt = `A sesame-bun burger with beef, ${removed ? 'no cheese, ' : 'cheese, '}lettuce, tomato and red onion. Drag or use arrow keys to rotate.`;
+}
+
+function beginLoad() {
+  loaded = false;
+  failed = false;
+  launching = false;
+  loading.hidden = false;
+  retry.hidden = true;
+  status.textContent = 'Updating the 3D preview and AR selection…';
+  refreshControls();
+  renderSelection();
+  // Both native viewers receive a real, matching file for the chosen recipe.
+  // Browser-only material opacity changes would not carry over to Scene Viewer.
+  viewer.setAttribute('ios-src', variants[selected].usdz);
+  viewer.setAttribute('src', variants[selected].glb);
+  clearTimeout(loadTimer);
+  loadTimer = setTimeout(() => {
+    if (!customElements.get('model-viewer')) showError();
+    else if (!loaded) {
+      status.textContent = 'Still loading your selection. Check your connection or try again.';
+      retry.hidden = false;
+    }
+  }, 20000);
 }
 
 function showError() {
+  clearTimeout(loadTimer);
   loaded = false;
+  failed = true;
   loading.hidden = true;
   retry.hidden = false;
-  reset.disabled = true;
-  launch.disabled = true;
-  launch.textContent = 'Model unavailable';
-  status.textContent = 'The burger could not load. Check your connection and try again.';
+  refreshControls();
+  renderSelection();
+  status.textContent = 'Your selected burger could not load. Try again or change the cheese selection. AR is paused until the correct model loads.';
 }
 
-viewer.addEventListener('load', () => {
+viewer.addEventListener('load', event => {
+  const expected = new URL(variants[selected].glb, document.baseURI).href;
+  if (event.detail?.url && new URL(event.detail.url, document.baseURI).href !== expected) return;
+  clearTimeout(loadTimer);
   loaded = true;
+  failed = false;
   loading.hidden = true;
   retry.hidden = true;
-  reset.disabled = false;
-  refreshARAvailability();
-  status.textContent = viewer.canActivateAR ? 'Ready. Find a well-lit table and tap above to begin.' : '3D is ready. Drag the burger to explore it from every angle.';
+  refreshControls();
+  renderSelection();
+  status.textContent = viewer.canActivateAR ? `${variants[selected].label}. Ready to view on your table.` : `${variants[selected].label}. Drag to explore in 3D; open on a compatible phone for AR.`;
 });
 viewer.addEventListener('error', showError);
 viewer.addEventListener('ar-status', event => {
-  if (event.detail.status === 'failed') {
-    launching = false;
-    refreshARAvailability();
-    status.textContent = 'AR could not start. Open “AR didn’t open?” below for help. You can still explore in 3D.';
-  } else if (event.detail.status === 'not-presenting') {
-    launching = false;
-    refreshARAvailability();
-  }
+  const state = event.detail.status;
+  presenting = state === 'session-started' || state === 'object-placed';
+  if (state === 'failed' || state === 'not-presenting') launching = false;
+  refreshControls();
+  if (state === 'failed') status.textContent = 'AR could not start. Open “AR didn’t open?” below for help.';
+});
+toggle.addEventListener('click', () => {
+  if (toggle.disabled) return;
+  selected = selected === 'withCheese' ? 'withoutCheese' : 'withCheese';
+  const url = new URL(location.href);
+  if (selected === 'withoutCheese') url.searchParams.set('cheese', 'off');
+  else url.searchParams.delete('cheese');
+  history.replaceState(null, '', url);
+  beginLoad();
 });
 launch.addEventListener('click', async () => {
-  if (!loaded || !viewer.canActivateAR || launching) return;
+  if (!loaded || !viewer.canActivateAR || launching || presenting) return;
   launching = true;
-  refreshARAvailability();
+  refreshControls();
   try { await viewer.activateAR(); }
   catch { status.textContent = 'AR could not start. Try Safari on iPhone or Chrome on a supported Android phone.'; }
-  finally { launching = false; refreshARAvailability(); }
+  finally { launching = false; refreshControls(); }
 });
 reset.addEventListener('click', () => {
   viewer.cameraOrbit = '30deg 70deg 0.38m';
   viewer.cameraTarget = 'auto auto auto';
   viewer.fieldOfView = 'auto';
 });
-retry.addEventListener('click', () => window.location.reload());
+retry.addEventListener('click', () => location.reload());
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden) { launching = false; refreshARAvailability(); }
+  if (!document.hidden) { launching = false; refreshControls(); }
 });
-window.setTimeout(() => {
-  if (!customElements.get('model-viewer')) showError();
-  else if (!loaded) {
-    status.textContent = 'Still loading the 3D model. On a slow connection, this may take a moment.';
-    retry.hidden = false;
-  }
-}, 20000);
+beginLoad();
