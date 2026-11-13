@@ -20,7 +20,7 @@ A free, static fictional restaurant prototype. Visitors can independently add/re
 The source model is [Grab3D's CC0 burger](https://grab3d.com/models/food/burger/). Grab3D describes it as procedural geometry made with AI-assisted Blender scripts. Original `cheeseburger.glb` and `cheeseburger.usdz` remain unchanged.
 
 - `burger-layers.glb`: seven meshes and named materials; one lift animation. All 28,160 original triangles, source textures and original physical scale are preserved. Onion and tomato pieces are grouped; sesame seeds stay with the top bun.
-- `burger-customizable.usdz`: self-contained native configuration model with eight variant sets on its default prim, shared textures, and a textual recipe layer. Geometry matches the GLB by triangle vertex position.
+- `burger-customizable-v2.usdz`: revised iPhone configuration model with eight variant sets on its default prim. Ingredient choices change material bindings; arrangement choices change a seven-joint skeletal pose. The previous visibility/transform variants composed correctly but did not visibly change on the user's iPhone. V2 follows Apple's documented material/skeleton variant mechanisms and still requires on-device confirmation. Source mesh geometry and textures are preserved.
 - `recipe-package.js`: reads the stored ZIP, updates default variant choices, and writes an uncompressed USDZ with CRC32 and 64-byte payload alignment. The browser supplies this as a blob URL to Quick Look.
 - `ingredients.json`: triangle counts and vertical lift offsets.
 - `index.html`, `styles.css`, `viewer.js`: responsive page and interaction logic.
@@ -33,7 +33,7 @@ The stacked model is roughly 13.4 cm wide × 10.3 cm high × 13.2 cm deep. Separ
 
 Asset checks cover all seven layer groups with no duplicated or missing source triangles, USD composition for each ingredient and arrangement, and matching source geometry. Packaging tests cover all 128 ingredient combinations, both arrangements, unchanged geometry/textures, CRC checks, USD parsing and 64-byte alignment. Control tests cover empty recipes, AR controls, lift/stack, reset, URL restore and matching iPhone defaults. Browser checks cover visible ingredient changes, separated/stacked views, responsive layout and reload persistence.
 
-Physical-phone camera tracking, placement, Quick Look configuration menus and animated Android AR require on-device acceptance testing; desktop checks cannot verify them.
+The iPhone V2 file passes `usdchecker --arkit` across all variant combinations. Composition tests verify every ingredient material binding and both skeletal poses. These checks do not prove Quick Look applies the choices at runtime. Physical-phone camera tracking, placement, Quick Look configuration changes and animated Android AR require on-device acceptance testing; desktop checks cannot verify them.
 
 ## Phone acceptance test
 

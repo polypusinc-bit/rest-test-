@@ -87,7 +87,7 @@ function queuePackage(){
 }
 async function loadPackage(){
  iosError=false;render();
- try{const response=await fetch('burger-customizable.usdz');if(!response.ok)throw new Error('AR download failed');packageEntries=readStoredZip(await response.arrayBuffer());queuePackage();}
+ try{const response=await fetch('burger-customizable-v2.usdz');if(!response.ok)throw new Error('AR download failed');packageEntries=readStoredZip(await response.arrayBuffer());queuePackage();}
  catch(error){iosError=true;status.textContent='The iPhone AR file could not load. You can still customize in 3D; use Retry iPhone AR below.';render();}
 }
 function choose(id){
