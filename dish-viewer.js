@@ -1,5 +1,5 @@
 import { readStoredZip, makeRecipePackage } from './recipe-package.js?v=layers-1';
-import { DISHES } from './dishes.js?v=menu-2';
+import { DISHES } from './dishes.js?v=menu-3';
 const requestedDish=new URL(location.href).searchParams.get('dish');
 const dishId=Object.hasOwn(DISHES,requestedDish)?requestedDish:'pizza';
 const dish=DISHES[dishId];
