@@ -12,15 +12,21 @@ Sandwich ingredients: Chicken, Lettuce, Tomato, Pickles, Mayonnaise, Cheese, Bac
 
 Each GLB contains separate ingredient meshes and materials with the exact IDs above, vertex colors, and a `Separate layers` animation. The editable sources are `models-source/pizza.blend` and `models-source/chicken-sandwich.blend` in the local workspace. Optional extras are hidden for rendering in those files; all objects remain editable by name. Food is original procedural prototype geometry, not a scan.
 
-Each iPhone USDZ uses one skeleton. Ingredient variants change skeletal scale; arrangement changes translation. Fixed base scales remain one in every recipe. Nested variants encode combinations because USD scale arrays are atomic. The same `recipe-package.js` used by the burger supplies the current starting recipe without uploading choices. iPhone's native choices do not synchronize back to the webpage.
+The revised V2 iPhone files embed baked RGBA color textures. Every ingredient has a fixed material and shader binding. Flat default-prim variants switch only that material's texture between the colored atlas and a transparent image; opacity uses the texture alpha with a fixed 0.5 cutoff. This replaces V1's vertex-color shader and nested skeletal-scale variants, which the user reported as colorless and nonresponsive in camera AR. The one-skeleton translation animation still handles the confirmed working stacked/separated arrangement. Crust/bun materials have no removal variants. The original `recipe-package.js` prepares the initial choices locally, and native iPhone choices still do not synchronize back to the webpage.
 
 ## Verified
 
 - Every original hosted file matches its saved hash.
-- All 128 pizza recipes and 256 sandwich recipes, each in both arrangements, compose to the expected scales/translations and retain fixed bases.
+- All 128 pizza recipes and 256 sandwich recipes, each in both arrangements, compose to the expected visible/transparent textures and translations, retaining fixed bases.
 - Apple USD checks, CRCs, 64-byte USDZ alignment, GLB object/material names and animation channels.
 - Generated controls, defaults, all-removed/base-only state, repeated selection changes, WebXR overlay handlers in a mock session, reset, URL restore, iPhone download-failure gating, and local packaging of every recipe.
 - Actual browser rendering for both new dishes, mixed toppings, layout changes, URL reload, navigation, and narrow-screen framing.
+
+## Native import checks for V2
+
+A headless check using Apple RealityKit on this Mac reproduced the V1 color problem: it imported one opaque FoodMaterial with no base-color texture. V2 imports a distinct textured material for each ingredient, with the expected alpha cutoff. Actual browser-generated all-included and all-removed packages were loaded through RealityKit for both dishes; checks assert that fixed bases retain their color texture and every configurable ingredient receives its expected colored or transparent texture.
+
+These native import checks verify initial state and material setup, not interactive Quick Look switching or camera rendering on a physical iPhone. Those still need the phone checks below.
 
 ## Remaining phone acceptance checks
 
