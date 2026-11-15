@@ -1,0 +1,5 @@
+The Test Kitchen — prototype assets
+Pizza and chicken sandwich: original procedural prototype geometry created for this project. Editable Blender sources are included in the local models-source directory. These are illustrations, not scans or accurate representations of food for sale.
+Burger: Grab3D CC0 model, https://grab3d.com/models/food/burger/ . See MODEL-LICENSE.txt.
+Menu images are renders of these models.
+Viewer library: Google model-viewer 4.1.0. See MODEL-VIEWER-LICENSE.txt.
