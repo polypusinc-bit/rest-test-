@@ -8,10 +8,13 @@
       "description": "Your favorites, made your way. Explore the ingredients, then take a closer look on your table.",
       "logo": "brand-mark.svg",
       "theme": {
-        "accent": "#b94123",
-        "accentSoft": "#fff0e8",
-        "background": "#fffaf3",
-        "text": "#262522"
+        "accent": "#FF5A1F",
+        "accentInk": "#171A18",
+        "accentText": "#AD3512",
+        "accentSoft": "#FFE5D6",
+        "secondary": "#FFD36A",
+        "background": "#FFF8F0",
+        "text": "#171A18"
       },
       "currency": "USD",
       "demo": true,
@@ -559,7 +562,10 @@
         "accent": "#245c50",
         "accentSoft": "#e6f1ec",
         "background": "#fffaf3",
-        "text": "#262522"
+        "text": "#262522",
+        "accentInk": "#FFFFFF",
+        "accentText": "#245C50",
+        "secondary": "#E3D9AB"
       },
       "currency": "USD",
       "demo": true,

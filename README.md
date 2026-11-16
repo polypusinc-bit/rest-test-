@@ -1,5 +1,7 @@
 # The Test Kitchen
 
+Version 6 adds the bolder restaurant design, a shared direct ingredient editor, drag-to-bin with a labeled ghost, Undo, and compact WebXR controls. Browser 3D gestures have been checked; physical WebXR camera acceptance remains pending. Quick Look retains native controls and cannot run the new web gestures. See [interaction notes and device checklist](INTERACTION-NOTES.txt).
+
 A buildless, three-dish menu with shared customization, demo pricing and the existing model-viewer 4.1.0 AR mechanism. The primary customer menu is [menu.html?r=test-kitchen](https://polypusinc-bit.github.io/rest-test-/menu.html?r=test-kitchen). [Harbor Lunch Club](https://polypusinc-bit.github.io/rest-test-/menu.html?r=harbor-demo) demonstrates a second fictional restaurant without copying application code.
 
 `menu-data.json` owns restaurant branding, dish assets/defaults/mappings, availability and integer prices. `menu-core.js` validates menu data and handles pricing, query routes and restaurant/dish-scoped local persistence. `app.js` renders the menu and shared customization screen; `ar-viewer.js` preserves the prior material-alpha controls, per-recipe animation seeking, WebXR overlay and native USDZ packaging. `recipe-package.js`, the viewer dependency, burger/pizza V4 assets and original source geometry are unchanged.

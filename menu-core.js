@@ -33,7 +33,7 @@ export function validateMenu(data){
  return data;
 }
 export function defaults(dish){return {...dish.fixed,...Object.fromEntries(dish.options.map(o=>[o.id,o.default]))};}
-export function normalizeRecipe(dish,input={}){const result=defaults(dish);for(const o of dish.options)if(typeof input[o.id]==='boolean')result[o.id]=input[o.id];for(const o of dish.options)if(result[o.id]&&o.requires.some(n=>!result[n]))result[o.id]=false;return result;}
+export function normalizeRecipe(dish,input={}){const result=defaults(dish);for(const o of dish.options)if(typeof input[o.id]==='boolean')result[o.id]=input[o.id];for(let pass=0;pass<dish.options.length;pass++){let changed=false;for(const o of dish.options)if(result[o.id]&&o.requires.some(n=>!result[n])){result[o.id]=false;changed=true;}if(!changed)break;}return result;}
 export function priceCents(dish,input){const recipe=normalizeRecipe(dish,input);return Math.max(0,dish.basePrice+dish.options.reduce((sum,o)=>sum+(recipe[o.id]?o.priceDelta:-(o.default?o.removalCredit:0)),0));}
 export function money(cents,currency){const format=new Intl.NumberFormat('en-US',{style:'currency',currency});return format.format(cents/10**format.resolvedOptions().maximumFractionDigits);}
 export function menuURL(restaurant){return `menu.html?r=${encodeURIComponent(restaurant.slug)}`;}

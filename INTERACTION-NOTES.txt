@@ -1,0 +1,130 @@
+THE TEST KITCHEN — VISUAL + INGREDIENT EDITOR UPDATE
+2026-11-16 | version 6
+
+CAPABILITY TABLE
+Mode                     Pick food / drag to bin  Custom camera UI  Recipe sync
+Browser 3D preview       Implemented + checked   Not a camera      Yes
+Android WebXR + overlay Implemented; phone test  Implemented       Yes, same state
+                        still required          phone test pending
+Native iPhone Quick Look Not supported           No web overlay    Page -> AR only
+Other browsers          3D if model renders      AR depends on device/browser
+
+Quick Look retains its native ingredient configuration and Stack/Separate.
+This update does NOT add drag-to-trash inside iPhone camera AR. Use Edit
+ingredients in the website's regular 3D preview for the new gesture on iPhone.
+No physical iPhone or Android camera tests were performed for this release.
+
+HOW TO USE
+1. In 3D choose Edit ingredients. In WebXR, first place the dish; editing then
+   becomes active. Reposition dish switches back to the viewer's placement mode.
+2. Spread ingredients to reach hidden layers. Tap a visible ingredient to select.
+3. Drag it into the bin and release, or tap the bin after selecting it.
+   A labeled ghost follows your finger. The actual ingredient mesh does not move
+   with the finger; the rest of the dish remains anchored.
+4. Release outside to cancel. A valid removal stacks the dish using its existing
+   recipe poses, updates the controls/price, and prepares the iPhone recipe file.
+5. Undo restores the complete previous recipe AND layout. Add items back using
+   the ingredient tray/buttons. Reset restores configured defaults.
+6. Pepperoni slices are a single configured group; Extra pepperoni is separate.
+   Fixed chicken, sandwich buns, and pizza crust/sauce cannot be selected.
+   Burger's existing bun controls remain editable to preserve its configuration.
+
+ENGINEERING / PRESERVATION
+Active: menu.html/index.html/dish.html -> app.js/app.css -> ar-viewer.js.
+New: ingredient-interaction.js (gesture state), ingredient-editor.js (UI),
+picking-adapter.js (only compatibility bridge to pinned model-viewer 4.1.0).
+Recipe state, prices, persistence and native packaging use the same commit path
+as conventional ingredient controls. Transitive dependencies now normalize to
+completion regardless of option order. Undo is one step and includes dependents.
+
+materialFromPoint is the public picking API. Version 4.1.0's internal scene
+getHit ignores opacity, so the adapter temporarily marks wholly invisible
+meshes noHit, restoring every flag in finally. It never changes model geometry.
+Opaque fixed geometry blocks picking underneath. Current material IDs map to
+logical options, including repeated pieces and multiple materials. Ambiguous
+mappings are rejected. Object IDs are supported by the shared resolver; current
+models use material picking. New assets with shared materials need preparation.
+
+The same isolated adapter corrects XR screen coordinates against the overlay
+bounds because 4.1.0 normalizes against window.screen dimensions. Its active
+XR camera and current animated meshes perform picking. This source inspection
+and mocked coordinate tests do NOT verify real-device accuracy.
+
+Only the local edit surface and controls prevent beforexrselect. Move mode
+passes placement gestures through. The documented exit-webxr-ar-button slot
+connects the Back button to the viewer's real session exit. No fake exit method.
+Pointer cancellation, tracking loss, blur, resize, page hide, mode change, tray
+opening and AR exit clear gesture visuals. Highlighting temporarily changes
+emission only, restoring the prior values. Base color, textures and opacity
+are preserved. If picking compatibility fails, conventional controls remain.
+
+All GLB/USDZ assets, recipe-package.js, animation order, model-viewer dependency,
+scale, placement, and Quick Look files are byte-identical to the v5 baseline.
+No new dependencies, services, accounts, dashboards or checkout were added.
+Versioned entry points and imports use v=6; unchanged package writer stays at
+its existing version. Existing restaurant/dish links and state keys remain.
+
+TESTS ACTUALLY RUN
+- 15 existing tests passed before editing; 27 total tests pass after editing.
+- Mapping, hidden/fixed/ambiguous exclusions, selection without deletion,
+  continuous drag, outside drop, pointer cancellation, multitouch, Undo/reset,
+  complete dependent restoration, prices, isolated state, AR lifecycle mocks,
+  coordinate conversion, highlight cleanup and adapter flag restoration.
+- Browser 3D: burger cheese selection, drag removal/stack, outside cancellation,
+  bin button, Undo; pizza pepperoni group removal and subsequent picking of
+  visible mozzarella through removed pepperoni; chicken fixed bun protection
+  and bacon removal, price $15.95 -> $13.95.
+- Responsive checks: 320, 390, 430 CSS-pixel portrait widths, 844 landscape,
+  desktop. These are browser viewport checks, not physical phone testing.
+- Contrast ratios: Test Kitchen button 5.62:1, accent text 6.05:1,
+  main text 16.65:1. Harbor button 7.72:1. Keyboard focus styles retained.
+- Baseline and redesigned desktop/mobile screenshots saved in workspace.
+
+PHYSICAL-PHONE ACCEPTANCE — STILL REQUIRED
+Use a real iPhone Safari and a compatible Android Chrome, and repeat all three
+dishes. Record OS/browser version, orientation and any mismatch.
+[ ] QR/deep link opens; refresh preserves dish and selections.
+[ ] Camera permission, table detection, placement and correct real scale.
+[ ] Android: no edits before placement; after placement tap only selects.
+[ ] Android: drag/binned drop removes correct ingredient and stacks without gaps.
+[ ] Android: outside drop, second finger, tracking interruption, orientation
+    change and exit during drag NEVER remove food accidentally.
+[ ] Android: hidden layers require spreading; fixed structure blocks selection.
+[ ] Android: dragging food does not move/rotate/reposition the entire dish.
+[ ] Android: tray collapse, safe areas, landscape, bin hit area, Undo, reset,
+    restore extras and accurate price; Back exits; re-entry works.
+[ ] iPhone: same native ingredient and arrangement controls still function.
+    Page choices seed AR. Native changes do not return to the page or price.
+[ ] iPhone: page 3D drag/cancel/Undo works; no expectation of bin in Quick Look.
+[ ] All: colors/textures, compact stacking, scale, conventional accessible buttons.
+
+SMALLEST REALISTIC PATH TO EQUIVALENT IPHONE CAMERA GESTURES (PROPOSAL ONLY)
+Build a small native iOS companion using ARKit world tracking and RealityKit
+ARView, while retaining this website and Android path. Use per-ingredient
+entities/collision shapes and screen-space native UI. Existing source models
+can be reused, but entity/collision preparation and import validation are
+required; the current merged skeletal USDZ is not automatically an editable
+entity hierarchy. Use the same menu IDs/pricing rules and a deliberate bridge
+for returning a complete recipe to the website.
+
+Hosting: existing public menu/config/assets can stay on HTTPS GitHub Pages.
+No tracking server is required. App distribution and any universal-link domain
+association are separate setup; a suitable domain may be needed for that route.
+Tracking: real six-degree-of-freedom ARKit plane/world tracking, not a model
+pasted over a camera video. Dependencies: Apple's SDKs, Xcode and native Swift
+code; no commercial web-AR service is introduced. Licensing: Apple SDK and
+Developer Program terms apply; public/beta distribution needs the appropriate
+membership, while personal-device Xcode testing has provisioning limitations.
+Maintenance: an additional iOS app, native gestures, collision assets, recipe
+synchronization and OS/device QA. It adds install/distribution friction.
+This is an engineering recommendation, not an implemented feature or estimate.
+Approval is needed before starting that framework/app change or paid enrollment.
+
+OFFICIAL SOURCES CHECKED 2026-11-16
+https://modelviewer.dev/docs/
+https://github.com/google/model-viewer/blob/v4.1.0/packages/model-viewer/src/features/scene-graph.ts
+https://github.com/google/model-viewer/blob/v4.1.0/packages/model-viewer/src/three-components/ModelScene.ts
+https://github.com/google/model-viewer/blob/v4.1.0/packages/model-viewer/src/three-components/ARRenderer.ts
+https://developer.apple.com/documentation/arkit/arworldtrackingconfiguration
+https://developer.apple.com/documentation/realitykit/arview/entity(at:)
+https://developer.apple.com/help/account/basics/about-your-developer-account

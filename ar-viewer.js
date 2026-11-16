@@ -1,5 +1,6 @@
 import {readStoredZip,makeRecipePackage} from './recipe-package.js?v=layers-1';
-import {defaults as defaultRecipe,saveSelection as persistSelection} from './menu-core.js?v=5';
+import {defaults as defaultRecipe,saveSelection as persistSelection,normalizeRecipe} from './menu-core.js?v=6';
+import {attachIngredientEditor} from './ingredient-editor.js?v=6';
 export function startViewer({restaurant,dish,selection,storage,onChange}){
 const viewer=document.querySelector('#dish');
 const launch=document.querySelector('#launch-ar');
@@ -19,7 +20,11 @@ const recipe={...selection.recipe};
 let separated=selection.separated;
 let loaded=false,failed=false,presenting=false,launching=false,animating=false;
 let iosReady=false,iosError=false,packageEntries=null,blobUrl=null;
-let animationTimer,packageTimer;
+let animationTimer,packageTimer,editor;
+let historyRecipe=null;
+let placed=false,tracking=true;
+const originalColors=new Map();
+const canChange=()=>loaded&&!launching&&(!presenting||(placed&&tracking));
 const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(/Mac/.test(navigator.userAgent)&&navigator.maxTouchPoints>1);
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function saveSelection(){
@@ -30,9 +35,9 @@ function saveSelection(){
 }
 function render(){
  const ready=loaded&&(!isIOS||iosReady);
- for(const b of buttons){const id=b.dataset.ingredient;b.disabled=!loaded||launching;b.setAttribute('aria-pressed',String(recipe[id]));b.setAttribute('aria-label',`${recipe[id]?'Remove':'Add'} ${names[id].toLowerCase()}`);b.querySelector('.ingredient-state').textContent=recipe[id]?'Selected':'Add';}
- for(const b of layouts){b.disabled=!loaded||launching;b.textContent=separated?'Stack layers':'Separate layers';b.setAttribute('aria-pressed',String(separated));}
- for(const b of resets)b.disabled=!loaded||launching;
+ for(const b of buttons){const id=b.dataset.ingredient;b.disabled=!canChange();b.setAttribute('aria-pressed',String(recipe[id]));b.setAttribute('aria-label',`${recipe[id]?'Remove':'Add'} ${names[id].toLowerCase()}`);b.querySelector('.ingredient-state').textContent=recipe[id]?'Selected':'Add';}
+ for(const b of layouts){b.disabled=!canChange();b.textContent=separated?'Stack ingredients':'Spread ingredients';b.setAttribute('aria-pressed',String(separated));}
+ for(const b of resets)b.disabled=!canChange();
  const count=dish.options.filter(o=>recipe[o.id]).length;
  const summary=`${count} of ${dish.options.length} options · ${separated?'layers separated':'stacked'}. ${dish.baseNote}`;
  document.querySelector('#recipe-status').textContent=summary;
@@ -51,7 +56,7 @@ function render(){
 function applyIngredients(){
  for(const id of ids){
   const option=dish.options.find(o=>o.id===id), mappings=option?.model.materials??[id];
-  for(const name of mappings){const material=viewer.model.materials.find(m=>m.name===name);if(!material)throw new Error(`Ingredient mapping missing: ${name}`);material.pbrMetallicRoughness.setBaseColorFactor([1,1,1,recipe[id]?1:0]);}
+  for(const name of mappings){const material=viewer.model.materials.find(m=>m.name===name);if(!material)throw new Error(`Ingredient mapping missing: ${name}`);if(!originalColors.has(material))originalColors.set(material,[...(material.pbrMetallicRoughness.baseColorFactor??[1,1,1,1])]);const color=[...originalColors.get(material)];color[3]=recipe[id]?color[3]:0;material.pbrMetallicRoughness.setBaseColorFactor(color);}
  }
 }
 let poseRevision=0;
@@ -111,33 +116,39 @@ async function loadPackage(){
  try{const response=await fetch(dish.assets.usdz);if(!response.ok)throw new Error('AR download failed');packageEntries=readStoredZip(await response.arrayBuffer());queuePackage();}
  catch(error){iosError=true;status.textContent='The iPhone AR file could not load. You can still customize in 3D; use Retry iPhone AR below.';render();}
 }
+function commit(next,nextSeparated=separated,feedback='',remember=true){
+ if(!canChange())return;
+ editor?.cancel();
+ if(remember)historyRecipe={recipe:{...recipe},separated};
+ Object.assign(recipe,normalizeRecipe(dish,next));separated=nextSeparated;
+ applyIngredients();saveSelection();refreshRecipePose();queuePackage();editor?.changed(feedback);
+}
+function undo(){if(!historyRecipe||!canChange())return;const previous=historyRecipe;historyRecipe=null;commit(previous.recipe,previous.separated,'Previous recipe restored.',false);}
 function choose(id){
- if(!loaded||launching)return;
- const option=dish.options.find(o=>o.id===id);
+ if(!canChange())return;
+ const option=dish.options.find(o=>o.id===id);if(!option)return;
  if(!recipe[id]&&option.requires.some(n=>!recipe[n])){status.textContent='Add the required ingredient first.';return;}
- recipe[id]=!recipe[id];
- for(const o of dish.options)if(recipe[o.id]&&o.requires.some(n=>!recipe[n]))recipe[o.id]=false;
- // Keep the chosen layout; stacked recipes close gaps after every edit.
- applyIngredients();saveSelection();refreshRecipePose();queuePackage();
+ commit({...recipe,[id]:!recipe[id]},separated,`${option.label} ${recipe[id]?'removed':'added'}.`);
 }
 for(const b of buttons)b.addEventListener('click',()=>choose(b.dataset.ingredient));
-for(const b of layouts)b.addEventListener('click',()=>{if(!loaded||launching)return;separated=!separated;saveSelection();moveLayers();queuePackage();});
-for(const b of resets)b.addEventListener('click',()=>{if(!loaded||launching)return;for(const id of ids)recipe[id]=defaults[id];separated=false;applyIngredients();saveSelection();refreshRecipePose();queuePackage();});
+for(const b of layouts)b.addEventListener('click',()=>{if(!canChange())return;editor?.cancel();separated=!separated;saveSelection();moveLayers();queuePackage();editor?.changed();});
+for(const b of resets)b.addEventListener('click',()=>commit(defaults,false,'Default recipe restored.'));
 document.querySelector('#ar-customizer').addEventListener('beforexrselect',event=>event.preventDefault());
 viewer.addEventListener('load',async()=>{
- try{if(!await selectRecipePose())return;viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;loading.hidden=true;retry.hidden=true;render();status.textContent='Stacked layers close up when you remove ingredients. Use Separate layers to inspect your choices.';}
+ try{if(!await selectRecipePose())return;viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;editor=attachIngredientEditor({viewer,dish,getRecipe:()=>({...recipe}),remove:id=>commit({...recipe,[id]:false},false,`${names[id]} removed. Undo to restore.`),undo,canUndo:()=>!!historyRecipe,isReady:canChange});loading.hidden=true;retry.hidden=true;render();status.textContent='Stacked layers close up when you remove ingredients. Use Spread ingredients to reach hidden layers.';}
  catch(error){showError(error);console.error(error);}
 });
 function showError(error){loaded=false;failed=true;loading.hidden=false;loading.textContent=error?.message?.includes('mapping')?'This dish’s ingredient controls need attention. Please choose another dish.':'We couldn’t load the 3D model. Check your connection and try again.';retry.hidden=false;status.textContent=loading.textContent;render();}
 viewer.addEventListener('error',showError);
 viewer.addEventListener('ar-status',event=>{
- const state=event.detail.status;presenting=state==='session-started'||state==='object-placed';
+ const state=event.detail.status;presenting=state==='session-started'||state==='object-placed';placed=state==='object-placed';tracking=true;
  if(presenting||state==='failed'||state==='not-presenting')launching=false;
  if(state==='failed')status.textContent='AR could not start. Check camera permission in your browser settings, or keep exploring in 3D.';
  render();
 });
+viewer.addEventListener('ar-tracking',event=>{tracking=event.detail.status==='tracking';editor?.cancel();render();});
 launch.addEventListener('click',async()=>{
- if(launch.disabled)return;launching=true;render();
+ if(launch.disabled)return;editor?.cancel();launching=true;render();
  try{await viewer.activateAR();}catch{status.textContent='AR could not start. Allow camera access in browser settings and try again. You can still use the 3D preview.';}finally{launching=false;render();}
 });
 document.querySelector('#reset-view').addEventListener('click',()=>{frameDish();viewer.fieldOfView='auto';});
