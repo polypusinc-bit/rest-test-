@@ -1,4 +1,14 @@
-# Three-dish menu prototype
+# Compact stack update (V4)
+
+All three dishes now compact their stacked layout after ingredient removal. Burger and sandwich ingredients use authored contact planes and cumulative visible-layer thickness. Pizza toppings share the cheese surface, or the sauce surface when mozzarella is absent; extra pepperoni rests on the regular pepperoni when present. Separate preserves the original inspection offsets. Native Quick Look recipes contain complete, uniquely named skeletal poses and matching rest transforms for every recipe/layout combination. Ingredient material selection remains intact for pizza/chicken; burger retains skeletal-scale removal.
+
+The browser/WebXR assets contain a matching animation per recipe. The viewer waits for the selected animation to load, cancels stale updates, and applies the current layout. Editing ingredients preserves Stacked or Separated instead of forcing separation. Original burger geometry, materials, scripts and V3 AR assets are retained; index.html now selects the new versioned viewer and assets.
+
+Validation: tools/test-compact-menu.py checks 512 recipes in both layouts across all three dishes, including matching GLB/USD positions and contact surfaces. tools/test-compact-burger-controls.cjs and tools/test-menu-controls.mjs check controls, resets and rapid changes. tools/compact-native-checks.txt records 18 Apple RealityKit import checks covering all included, all removed and partial recipes in both layouts. Native imports verify initial joint positions and recipe animation sources. Browser screenshots confirm stacked removals visually. Live physical iPhone and Android camera switching still requires phone testing.
+
+Phone acceptance: close any earlier AR view, open menu.html?v=ios-menu-4, enter each dish, set Arrangement to Stacked, and remove/restore lower and middle ingredients without closing the camera. Remaining layers should settle together. Switch to Separated and back, and confirm the recipe remains selected.
+
+## Three-dish menu prototype
 
 Entry point: https://polypusinc-bit.github.io/rest-test-/menu.html
 

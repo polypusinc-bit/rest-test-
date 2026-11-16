@@ -1,5 +1,5 @@
 import { readStoredZip, makeRecipePackage } from './recipe-package.js?v=layers-1';
-import { DISHES } from './dishes.js?v=menu-3';
+import { DISHES } from './dishes.js?v=menu-4';
 const requestedDish=new URL(location.href).searchParams.get('dish');
 const dishId=Object.hasOwn(DISHES,requestedDish)?requestedDish:'pizza';
 const dish=DISHES[dishId];
@@ -72,6 +72,23 @@ function render(){
 function applyIngredients(){
  for(const id of ids){const material=viewer.model.materials.find(m=>m.name===id);if(!material)throw new Error(`Missing ${id} layer`);material.pbrMetallicRoughness.setBaseColorFactor([1,1,1,recipe[id]?1:0]);}
 }
+let poseRevision=0;
+async function selectRecipePose(){
+ const revision=++poseRevision;
+ const time=Math.max(0,Math.min(1,viewer.currentTime||0));
+ const mask=ids.reduce((mask,id,i)=>mask|(recipe[id]?(1<<i):0),0);
+ viewer.animationCrossfadeDuration=0;
+ viewer.animationName=`Recipe_${mask}`;
+ // model-viewer applies animation-name during its reactive update.
+ await viewer.updateComplete;
+ if(revision!==poseRevision)return false;
+ viewer.timeScale=1;viewer.play({repetitions:1});viewer.pause();viewer.currentTime=time;
+ return true;
+}
+async function refreshRecipePose(){
+ clearTimeout(animationTimer);
+ if(await selectRecipePose()){applyIngredients();moveLayers();}
+}
 function finishMotion(){
  viewer.pause();viewer.currentTime=separated?1:0;animating=false;applyIngredients();
 }
@@ -115,16 +132,15 @@ async function loadPackage(){
 function choose(id){
  if(!loaded||launching)return;
  recipe[id]=!recipe[id];
- // Lift before hiding a removed layer; restore added layers immediately.
- if(recipe[id])applyIngredients();
- separated=true;saveSelection();moveLayers();queuePackage();
+ // Keep the chosen layout; stacked recipes close gaps after every edit.
+ applyIngredients();saveSelection();refreshRecipePose();queuePackage();
 }
 for(const b of buttons)b.addEventListener('click',()=>choose(b.dataset.ingredient));
 for(const b of layouts)b.addEventListener('click',()=>{if(!loaded||launching)return;separated=!separated;saveSelection();moveLayers();queuePackage();});
-for(const b of resets)b.addEventListener('click',()=>{if(!loaded||launching)return;for(const id of ids)recipe[id]=defaults[id];separated=false;applyIngredients();saveSelection();moveLayers();queuePackage();});
+for(const b of resets)b.addEventListener('click',()=>{if(!loaded||launching)return;for(const id of ids)recipe[id]=defaults[id];separated=false;applyIngredients();saveSelection();refreshRecipePose();queuePackage();});
 document.querySelector('#ar-customizer').addEventListener('beforexrselect',event=>event.preventDefault());
-viewer.addEventListener('load',()=>{
- try{viewer.timeScale=1;viewer.play({repetitions:1});viewer.pause();viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;loading.hidden=true;retry.hidden=true;render();status.textContent='Choose ingredients to lift the layers apart. Stack them again whenever you’re ready.';}
+viewer.addEventListener('load',async()=>{
+ try{if(!await selectRecipePose())return;viewer.currentTime=separated?1:0;applyIngredients();loaded=true;failed=false;loading.hidden=true;retry.hidden=true;render();status.textContent='Stacked layers close up when you remove ingredients. Use Separate layers to inspect your choices.';}
  catch(error){showError();console.error(error);}
 });
 function showError(){loaded=false;failed=true;loading.hidden=true;retry.hidden=false;status.textContent='The dish could not load. Check your connection and try again.';render();}
