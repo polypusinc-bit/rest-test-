@@ -3,3 +3,5 @@ Pizza and chicken sandwich: original procedural prototype geometry created for t
 Burger: Grab3D CC0 model, https://grab3d.com/models/food/burger/ . See MODEL-LICENSE.txt.
 Menu images are renders of these models.
 Viewer library: Google model-viewer 4.1.0. See MODEL-VIEWER-LICENSE.txt.
+
+Redesign: burger-thumb.webp, pizza-thumb.webp and chicken-sandwich-thumb.webp are compressed copies of the existing licensed/procedural menu renders. Brand mark is an original simple vector. No stock photos imply actual served dishes. Menu prices and Harbor Lunch Club are fictional demo data.

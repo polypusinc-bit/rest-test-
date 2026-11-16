@@ -1,0 +1,1101 @@
+{
+  "schemaVersion": 1,
+  "restaurants": [
+    {
+      "id": "test-kitchen",
+      "slug": "test-kitchen",
+      "name": "The Test Kitchen",
+      "description": "Your favorites, made your way. Explore the ingredients, then take a closer look on your table.",
+      "logo": "brand-mark.svg",
+      "theme": {
+        "accent": "#b94123",
+        "accentSoft": "#fff0e8",
+        "background": "#fffaf3",
+        "text": "#262522"
+      },
+      "currency": "USD",
+      "demo": true,
+      "menuItems": [
+        {
+          "id": "burger",
+          "restaurantId": "test-kitchen",
+          "name": "Cheeseburger",
+          "description": "A juicy beef patty, melted cheese and crisp vegetables in a sesame bun.",
+          "thumbnail": "burger-thumb.webp",
+          "basePrice": 1295,
+          "available": true,
+          "assetStatus": "prototype-ready",
+          "assets": {
+            "glb": "burger-compact-v4.glb",
+            "usdz": "burger-customizable-v4.usdz"
+          },
+          "options": [
+            {
+              "id": "Bottom_Bun",
+              "label": "Bottom bun",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Bottom_Bun"
+                ],
+                "objects": [
+                  "Bottom_Bun"
+                ],
+                "usdVariant": "Bottom_Bun"
+              }
+            },
+            {
+              "id": "Patty",
+              "label": "Beef patty",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Patty"
+                ],
+                "objects": [
+                  "Patty"
+                ],
+                "usdVariant": "Patty"
+              }
+            },
+            {
+              "id": "Cheese",
+              "label": "Cheese",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Cheese"
+                ],
+                "objects": [
+                  "Cheese"
+                ],
+                "usdVariant": "Cheese"
+              }
+            },
+            {
+              "id": "Lettuce",
+              "label": "Lettuce",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Lettuce"
+                ],
+                "objects": [
+                  "Lettuce"
+                ],
+                "usdVariant": "Lettuce"
+              }
+            },
+            {
+              "id": "Tomato",
+              "label": "Tomato",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Tomato"
+                ],
+                "objects": [
+                  "Tomato"
+                ],
+                "usdVariant": "Tomato"
+              }
+            },
+            {
+              "id": "Onion",
+              "label": "Red onion",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Onion"
+                ],
+                "objects": [
+                  "Onion"
+                ],
+                "usdVariant": "Onion"
+              }
+            },
+            {
+              "id": "Top_Bun",
+              "label": "Top bun",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Top_Bun"
+                ],
+                "objects": [
+                  "Top_Bun"
+                ],
+                "usdVariant": "Top_Bun"
+              }
+            }
+          ],
+          "fixed": {},
+          "fixedGeometry": [],
+          "recipeOrder": [
+            "Bottom_Bun",
+            "Patty",
+            "Cheese",
+            "Lettuce",
+            "Tomato",
+            "Onion",
+            "Top_Bun"
+          ],
+          "presentation": {
+            "short": "burger",
+            "size": "13.4 cm wide \u00b7 about 10 cm tall",
+            "orbit": "30deg 75deg 0.48m",
+            "target": "0m 0.05m 0m",
+            "separatedOrbit": "30deg 75deg 0.75m",
+            "separatedTarget": "0m 0.13m 0m",
+            "arScale": "fixed",
+            "placement": "floor"
+          },
+          "baseNote": "Original burger ingredients.",
+          "assetNote": "Illustrative prototype model, not a photograph of an actual restaurant dish.",
+          "missingOptions": [
+            "Pickles",
+            "Bacon",
+            "Extra patty"
+          ]
+        },
+        {
+          "id": "pizza",
+          "restaurantId": "test-kitchen",
+          "name": "Pepperoni Pizza",
+          "description": "Golden crust, rich tomato sauce, mozzarella and pepperoni. Make it your own.",
+          "thumbnail": "pizza-thumb.webp",
+          "basePrice": 1595,
+          "available": true,
+          "assetStatus": "prototype-ready",
+          "assets": {
+            "glb": "pizza-compact-v4.glb",
+            "usdz": "pizza-customizable-v4.usdz"
+          },
+          "options": [
+            {
+              "id": "Pepperoni",
+              "label": "Pepperoni",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Pepperoni"
+                ],
+                "objects": [
+                  "Pepperoni"
+                ],
+                "usdVariant": "Pepperoni"
+              }
+            },
+            {
+              "id": "Mozzarella",
+              "label": "Mozzarella",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Mozzarella"
+                ],
+                "objects": [
+                  "Mozzarella"
+                ],
+                "usdVariant": "Mozzarella"
+              }
+            },
+            {
+              "id": "Mushrooms",
+              "label": "Mushrooms",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 125,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Mushrooms"
+                ],
+                "objects": [
+                  "Mushrooms"
+                ],
+                "usdVariant": "Mushrooms"
+              }
+            },
+            {
+              "id": "Olives",
+              "label": "Olives",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 75,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Olives"
+                ],
+                "objects": [
+                  "Olives"
+                ],
+                "usdVariant": "Olives"
+              }
+            },
+            {
+              "id": "Onions",
+              "label": "Onions",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 50,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Onions"
+                ],
+                "objects": [
+                  "Onions"
+                ],
+                "usdVariant": "Onions"
+              }
+            },
+            {
+              "id": "Jalapenos",
+              "label": "Jalape\u00f1os",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 50,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Jalapenos"
+                ],
+                "objects": [
+                  "Jalapenos"
+                ],
+                "usdVariant": "Jalapenos"
+              }
+            },
+            {
+              "id": "Extra_Pepperoni",
+              "label": "Extra pepperoni",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 200,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Extra_Pepperoni"
+                ],
+                "objects": [
+                  "Extra_Pepperoni"
+                ],
+                "usdVariant": "Extra_Pepperoni"
+              }
+            }
+          ],
+          "fixed": {},
+          "fixedGeometry": [
+            "Crust"
+          ],
+          "recipeOrder": [
+            "Pepperoni",
+            "Mozzarella",
+            "Mushrooms",
+            "Olives",
+            "Onions",
+            "Jalapenos",
+            "Extra_Pepperoni"
+          ],
+          "presentation": {
+            "short": "pizza",
+            "size": "30 cm wide \u00b7 about 4 cm tall",
+            "orbit": "25deg 42deg 0.8m",
+            "target": "0m 0.02m 0m",
+            "separatedOrbit": "25deg 55deg 0.95m",
+            "separatedTarget": "0m 0.1m 0m",
+            "arScale": "fixed",
+            "placement": "floor"
+          },
+          "baseNote": "Crust and tomato sauce always stay.",
+          "assetNote": "Illustrative prototype model, not a photograph of an actual restaurant dish.",
+          "missingOptions": []
+        },
+        {
+          "id": "chicken",
+          "restaurantId": "test-kitchen",
+          "name": "Chicken Sandwich",
+          "description": "Crispy golden chicken, lettuce, tomato, pickles and mayo in a sesame bun.",
+          "thumbnail": "chicken-sandwich-thumb.webp",
+          "basePrice": 1395,
+          "available": true,
+          "assetStatus": "prototype-ready",
+          "assets": {
+            "glb": "chicken-sandwich-compact-v4.glb",
+            "usdz": "chicken-sandwich-customizable-v5.usdz"
+          },
+          "options": [
+            {
+              "id": "Lettuce",
+              "label": "Lettuce",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Lettuce"
+                ],
+                "objects": [
+                  "Lettuce"
+                ],
+                "usdVariant": "Lettuce"
+              }
+            },
+            {
+              "id": "Tomato",
+              "label": "Tomato",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Tomato"
+                ],
+                "objects": [
+                  "Tomato"
+                ],
+                "usdVariant": "Tomato"
+              }
+            },
+            {
+              "id": "Pickles",
+              "label": "Pickles",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Pickles"
+                ],
+                "objects": [
+                  "Pickles"
+                ],
+                "usdVariant": "Pickles"
+              }
+            },
+            {
+              "id": "Mayonnaise",
+              "label": "Mayonnaise",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Mayonnaise"
+                ],
+                "objects": [
+                  "Mayonnaise"
+                ],
+                "usdVariant": "Mayonnaise"
+              }
+            },
+            {
+              "id": "Cheese",
+              "label": "Cheese",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 100,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Cheese"
+                ],
+                "objects": [
+                  "Cheese"
+                ],
+                "usdVariant": "Cheese"
+              }
+            },
+            {
+              "id": "Bacon",
+              "label": "Bacon",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 200,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Bacon"
+                ],
+                "objects": [
+                  "Bacon"
+                ],
+                "usdVariant": "Bacon"
+              }
+            },
+            {
+              "id": "Spicy_Sauce",
+              "label": "Spicy sauce",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 50,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Spicy_Sauce"
+                ],
+                "objects": [
+                  "Spicy_Sauce"
+                ],
+                "usdVariant": "Spicy_Sauce"
+              }
+            }
+          ],
+          "fixed": {
+            "Chicken": true
+          },
+          "fixedGeometry": [
+            "Bottom_Bun",
+            "Top_Bun"
+          ],
+          "recipeOrder": [
+            "Chicken",
+            "Lettuce",
+            "Tomato",
+            "Pickles",
+            "Mayonnaise",
+            "Cheese",
+            "Bacon",
+            "Spicy_Sauce"
+          ],
+          "presentation": {
+            "short": "chicken",
+            "size": "13 cm wide \u00b7 about 10 cm tall",
+            "orbit": "30deg 70deg 0.48m",
+            "target": "0m 0.05m 0m",
+            "separatedOrbit": "30deg 75deg 0.85m",
+            "separatedTarget": "0m 0.16m 0m",
+            "arScale": "fixed",
+            "placement": "floor"
+          },
+          "baseNote": "Chicken and both buns always stay.",
+          "assetNote": "Illustrative prototype model, not a photograph of an actual restaurant dish.",
+          "missingOptions": []
+        }
+      ]
+    },
+    {
+      "id": "harbor-demo",
+      "slug": "harbor-demo",
+      "name": "Harbor Lunch Club",
+      "description": "A second fictional restaurant, powered by the same menu. All dishes and prices are demonstration data.",
+      "logo": "brand-mark.svg",
+      "theme": {
+        "accent": "#245c50",
+        "accentSoft": "#e6f1ec",
+        "background": "#fffaf3",
+        "text": "#262522"
+      },
+      "currency": "USD",
+      "demo": true,
+      "menuItems": [
+        {
+          "id": "burger",
+          "restaurantId": "harbor-demo",
+          "name": "Cheeseburger",
+          "description": "A juicy beef patty, melted cheese and crisp vegetables in a sesame bun.",
+          "thumbnail": "burger-thumb.webp",
+          "basePrice": 1395,
+          "available": true,
+          "assetStatus": "prototype-ready",
+          "assets": {
+            "glb": "burger-compact-v4.glb",
+            "usdz": "burger-customizable-v4.usdz"
+          },
+          "options": [
+            {
+              "id": "Bottom_Bun",
+              "label": "Bottom bun",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Bottom_Bun"
+                ],
+                "objects": [
+                  "Bottom_Bun"
+                ],
+                "usdVariant": "Bottom_Bun"
+              }
+            },
+            {
+              "id": "Patty",
+              "label": "Beef patty",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Patty"
+                ],
+                "objects": [
+                  "Patty"
+                ],
+                "usdVariant": "Patty"
+              }
+            },
+            {
+              "id": "Cheese",
+              "label": "Cheese",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Cheese"
+                ],
+                "objects": [
+                  "Cheese"
+                ],
+                "usdVariant": "Cheese"
+              }
+            },
+            {
+              "id": "Lettuce",
+              "label": "Lettuce",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Lettuce"
+                ],
+                "objects": [
+                  "Lettuce"
+                ],
+                "usdVariant": "Lettuce"
+              }
+            },
+            {
+              "id": "Tomato",
+              "label": "Tomato",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Tomato"
+                ],
+                "objects": [
+                  "Tomato"
+                ],
+                "usdVariant": "Tomato"
+              }
+            },
+            {
+              "id": "Onion",
+              "label": "Red onion",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Onion"
+                ],
+                "objects": [
+                  "Onion"
+                ],
+                "usdVariant": "Onion"
+              }
+            },
+            {
+              "id": "Top_Bun",
+              "label": "Top bun",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Top_Bun"
+                ],
+                "objects": [
+                  "Top_Bun"
+                ],
+                "usdVariant": "Top_Bun"
+              }
+            }
+          ],
+          "fixed": {},
+          "fixedGeometry": [],
+          "recipeOrder": [
+            "Bottom_Bun",
+            "Patty",
+            "Cheese",
+            "Lettuce",
+            "Tomato",
+            "Onion",
+            "Top_Bun"
+          ],
+          "presentation": {
+            "short": "burger",
+            "size": "13.4 cm wide \u00b7 about 10 cm tall",
+            "orbit": "30deg 75deg 0.48m",
+            "target": "0m 0.05m 0m",
+            "separatedOrbit": "30deg 75deg 0.75m",
+            "separatedTarget": "0m 0.13m 0m",
+            "arScale": "fixed",
+            "placement": "floor"
+          },
+          "baseNote": "Original burger ingredients.",
+          "assetNote": "Illustrative prototype model, not a photograph of an actual restaurant dish.",
+          "missingOptions": [
+            "Pickles",
+            "Bacon",
+            "Extra patty"
+          ]
+        },
+        {
+          "id": "pizza",
+          "restaurantId": "harbor-demo",
+          "name": "Pepperoni Pizza",
+          "description": "Golden crust, rich tomato sauce, mozzarella and pepperoni. Make it your own.",
+          "thumbnail": "pizza-thumb.webp",
+          "basePrice": 1695,
+          "available": true,
+          "assetStatus": "prototype-ready",
+          "assets": {
+            "glb": "pizza-compact-v4.glb",
+            "usdz": "pizza-customizable-v4.usdz"
+          },
+          "options": [
+            {
+              "id": "Pepperoni",
+              "label": "Pepperoni",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Pepperoni"
+                ],
+                "objects": [
+                  "Pepperoni"
+                ],
+                "usdVariant": "Pepperoni"
+              }
+            },
+            {
+              "id": "Mozzarella",
+              "label": "Mozzarella",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Mozzarella"
+                ],
+                "objects": [
+                  "Mozzarella"
+                ],
+                "usdVariant": "Mozzarella"
+              }
+            },
+            {
+              "id": "Mushrooms",
+              "label": "Mushrooms",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 125,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Mushrooms"
+                ],
+                "objects": [
+                  "Mushrooms"
+                ],
+                "usdVariant": "Mushrooms"
+              }
+            },
+            {
+              "id": "Olives",
+              "label": "Olives",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 75,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Olives"
+                ],
+                "objects": [
+                  "Olives"
+                ],
+                "usdVariant": "Olives"
+              }
+            },
+            {
+              "id": "Onions",
+              "label": "Onions",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 50,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Onions"
+                ],
+                "objects": [
+                  "Onions"
+                ],
+                "usdVariant": "Onions"
+              }
+            },
+            {
+              "id": "Jalapenos",
+              "label": "Jalape\u00f1os",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 50,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Jalapenos"
+                ],
+                "objects": [
+                  "Jalapenos"
+                ],
+                "usdVariant": "Jalapenos"
+              }
+            },
+            {
+              "id": "Extra_Pepperoni",
+              "label": "Extra pepperoni",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 200,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Extra_Pepperoni"
+                ],
+                "objects": [
+                  "Extra_Pepperoni"
+                ],
+                "usdVariant": "Extra_Pepperoni"
+              }
+            }
+          ],
+          "fixed": {},
+          "fixedGeometry": [
+            "Crust"
+          ],
+          "recipeOrder": [
+            "Pepperoni",
+            "Mozzarella",
+            "Mushrooms",
+            "Olives",
+            "Onions",
+            "Jalapenos",
+            "Extra_Pepperoni"
+          ],
+          "presentation": {
+            "short": "pizza",
+            "size": "30 cm wide \u00b7 about 4 cm tall",
+            "orbit": "25deg 42deg 0.8m",
+            "target": "0m 0.02m 0m",
+            "separatedOrbit": "25deg 55deg 0.95m",
+            "separatedTarget": "0m 0.1m 0m",
+            "arScale": "fixed",
+            "placement": "floor"
+          },
+          "baseNote": "Crust and tomato sauce always stay.",
+          "assetNote": "Illustrative prototype model, not a photograph of an actual restaurant dish.",
+          "missingOptions": []
+        },
+        {
+          "id": "chicken",
+          "restaurantId": "harbor-demo",
+          "name": "Chicken Sandwich",
+          "description": "Crispy golden chicken, lettuce, tomato, pickles and mayo in a sesame bun.",
+          "thumbnail": "chicken-sandwich-thumb.webp",
+          "basePrice": 1495,
+          "available": false,
+          "assetStatus": "prototype-ready",
+          "assets": {
+            "glb": "chicken-sandwich-compact-v4.glb",
+            "usdz": "chicken-sandwich-customizable-v5.usdz"
+          },
+          "options": [
+            {
+              "id": "Lettuce",
+              "label": "Lettuce",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Lettuce"
+                ],
+                "objects": [
+                  "Lettuce"
+                ],
+                "usdVariant": "Lettuce"
+              }
+            },
+            {
+              "id": "Tomato",
+              "label": "Tomato",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Tomato"
+                ],
+                "objects": [
+                  "Tomato"
+                ],
+                "usdVariant": "Tomato"
+              }
+            },
+            {
+              "id": "Pickles",
+              "label": "Pickles",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Pickles"
+                ],
+                "objects": [
+                  "Pickles"
+                ],
+                "usdVariant": "Pickles"
+              }
+            },
+            {
+              "id": "Mayonnaise",
+              "label": "Mayonnaise",
+              "default": true,
+              "kind": "included",
+              "priceDelta": 0,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Mayonnaise"
+                ],
+                "objects": [
+                  "Mayonnaise"
+                ],
+                "usdVariant": "Mayonnaise"
+              }
+            },
+            {
+              "id": "Cheese",
+              "label": "Cheese",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 100,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Cheese"
+                ],
+                "objects": [
+                  "Cheese"
+                ],
+                "usdVariant": "Cheese"
+              }
+            },
+            {
+              "id": "Bacon",
+              "label": "Bacon",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 200,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Bacon"
+                ],
+                "objects": [
+                  "Bacon"
+                ],
+                "usdVariant": "Bacon"
+              }
+            },
+            {
+              "id": "Spicy_Sauce",
+              "label": "Spicy sauce",
+              "default": false,
+              "kind": "extra",
+              "priceDelta": 50,
+              "removalCredit": 0,
+              "selectionLimit": 1,
+              "requires": [],
+              "model": {
+                "materials": [
+                  "Spicy_Sauce"
+                ],
+                "objects": [
+                  "Spicy_Sauce"
+                ],
+                "usdVariant": "Spicy_Sauce"
+              }
+            }
+          ],
+          "fixed": {
+            "Chicken": true
+          },
+          "fixedGeometry": [
+            "Bottom_Bun",
+            "Top_Bun"
+          ],
+          "recipeOrder": [
+            "Chicken",
+            "Lettuce",
+            "Tomato",
+            "Pickles",
+            "Mayonnaise",
+            "Cheese",
+            "Bacon",
+            "Spicy_Sauce"
+          ],
+          "presentation": {
+            "short": "chicken",
+            "size": "13 cm wide \u00b7 about 10 cm tall",
+            "orbit": "30deg 70deg 0.48m",
+            "target": "0m 0.05m 0m",
+            "separatedOrbit": "30deg 75deg 0.85m",
+            "separatedTarget": "0m 0.16m 0m",
+            "arScale": "fixed",
+            "placement": "floor"
+          },
+          "baseNote": "Chicken and both buns always stay.",
+          "assetNote": "Illustrative prototype model, not a photograph of an actual restaurant dish.",
+          "missingOptions": []
+        }
+      ]
+    }
+  ]
+}

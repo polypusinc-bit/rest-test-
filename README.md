@@ -1,57 +1,25 @@
-# The Test Kitchen — build your burger in 3D and AR
+# The Test Kitchen
 
-Live viewer: https://polypusinc-bit.github.io/rest-test-/
-Menu / existing QR destination: https://sites.google.com/view/the-test-kitchen-menu-demo
+A buildless, three-dish menu with shared customization, demo pricing and the existing model-viewer 4.1.0 AR mechanism. The primary customer menu is [menu.html?r=test-kitchen](https://polypusinc-bit.github.io/rest-test-/menu.html?r=test-kitchen). [Harbor Lunch Club](https://polypusinc-bit.github.io/rest-test-/menu.html?r=harbor-demo) demonstrates a second fictional restaurant without copying application code.
 
-A free, static fictional restaurant prototype. Visitors can independently add/remove the top bun (including sesame seeds), red onion, tomato, lettuce, cheese, beef patty, and bottom bun.
+`menu-data.json` owns restaurant branding, dish assets/defaults/mappings, availability and integer prices. `menu-core.js` validates menu data and handles pricing, query routes and restaurant/dish-scoped local persistence. `app.js` renders the menu and shared customization screen; `ar-viewer.js` preserves the prior material-alpha controls, per-recipe animation seeking, WebXR overlay and native USDZ packaging. `recipe-package.js`, the viewer dependency, burger/pizza V4 assets and original source geometry are unchanged.
 
-## Interactions
+The browser and compatible Android WebXR show the page's recipe and running demo price. iPhone Quick Look receives the initial page recipe; native changes stay inside Quick Look and do not update the page or its price. The interface states this limitation. No checkout, tax, service fee, payment or order submission is implemented.
 
-- Choosing an ingredient lifts the layers apart. Removed ingredients disappear after the lift; added ingredients reappear.
-- **Separate layers / Stack burger** changes the arrangement; **Reset recipe** restores the original burger.
-- The URL retains the recipe and arrangement across reloads. Older `?cheese=off` links still work.
-- Reduced-motion preferences skip the animation.
-- On supported Android Chrome devices, the same controls appear inside WebXR camera AR. UI taps do not also place/move the model. Scene Viewer is excluded because it cannot display these controls.
-- On iPhone Safari, Quick Look exposes seven **Included / Removed** configuration menus plus **Arrangement → Separated / Stacked**. This is native configuration switching, not the webpage's smooth animation. Changes in Quick Look do not synchronize back to the webpage.
-- The iPhone file is prepared locally in the browser with the selected initial recipe and layout. Every file still contains every ingredient option. No recipe data is uploaded to a server. If preparation fails, the iPhone launch is disabled and a retry is offered.
+## Asset limits
 
-## Model and files
+All models are illustrative. Burger preserves its existing seven controls/defaults; its model has no separate pickles, bacon or extra-patty geometry, so those choices are not offered. Pizza crust/sauce stay fixed. Chicken and buns now stay fixed in both browser controls and its V5 native configuration; only that package's configuration wrapper changes, with geometry/material payloads unchanged. Native model mappings and GLB animation recipeOrder are preparation data, not editable customer labels. Adding options needs prepared geometry and matching AR exports.
 
-The source model is [Grab3D's CC0 burger](https://grab3d.com/models/food/burger/). Grab3D describes it as procedural geometry made with AI-assisted Blender scripts. Original `cheeseburger.glb` and `cheeseburger.usdz` remain unchanged.
+## Hosting and recovery
 
-- `burger-layers.glb`: seven meshes and named materials; one lift animation. All 28,160 original triangles, source textures and original physical scale are preserved. Onion and tomato pieces are grouped; sesame seeds stay with the top bun.
-- `burger-customizable-v3.usdz`: iPhone ingredient choices now change skeletal scale instead of materials. Removed layers shrink to roughly a micron, using a small nonzero scale to avoid singular transforms. Nested variants author the full scale array for all 128 recipes; arrangement independently controls translations. The existing single skeleton, geometry, and textures are preserved. The user confirmed V2's stacked/separated poses work in camera AR, but material-based removal only works in Object mode. V3 camera behavior still requires on-device confirmation.
-- `recipe-package.js`: reads the stored ZIP, updates default variant choices, and writes an uncompressed USDZ with CRC32 and 64-byte payload alignment. The browser supplies this as a blob URL to Quick Look.
-- `ingredients.json`: triangle counts and vertical lift offsets.
-- `index.html`, `styles.css`, `viewer.js`: responsive page and interaction logic.
-- `model-viewer.min.js`: pinned Google model-viewer 4.1.0, Apache 2.0 license alongside it.
-- Original and earlier cheese-only variants are retained for existing links.
+Verified GitHub Pages uses `main` and `/ (root)` with HTTPS. This source directory maps to the repository root. No build or install step is required. Serve locally with `python3 -m http.server 8765 --directory test-kitchen-ar` from the workspace. Query URLs work on direct opening and refresh; `/` remains a burger route for old links.
 
-The stacked model is roughly 13.4 cm wide × 10.3 cm high × 13.2 cm deep. Separation adds up to 15 cm of vertical lift without scaling ingredients. These are illustrative prototype dimensions, not measurements of real food. Removing an ingredient leaves its gap; **Stack burger** restores the original layer positions rather than compressing the remaining geometry.
+The pre-redesign remote baseline is commit `57ad2c23fa935d4f9ba4347e497d8943f89095c6`. Restore baseline files in a new commit for rollback. Older models/controllers remain available. Workspace `docs/DEPLOYMENT.txt` contains detailed instructions and local backup locations.
 
-## Validation
+## Validation and remaining work
 
-Asset checks cover all seven layer groups with no duplicated or missing source triangles, USD composition for each ingredient and arrangement, and matching source geometry. Packaging tests cover all 128 ingredient combinations, both arrangements, unchanged geometry/textures, CRC checks, USD parsing and 64-byte alignment. Control tests cover empty recipes, AR controls, lift/stack, reset, URL restore and matching iPhone defaults. Browser checks cover visible ingredient changes, separated/stacked views, responsive layout and reload persistence.
+Workspace tests: `node --test tests/*.test.mjs` covers data validation, pricing, reset, state isolation, routes, multiple-material mappings, missing assets/mappings, iPhone file failure gating and shared AR controls in mocks. Model composition checks cover every recipe and layout; fixed-chicken checks verify 128 native recipes in both layouts. Desktop browser previews cover mobile/desktop, prices, saved selections, second branding, unavailable/invalid links and all three models. These are not physical camera tests.
 
-The iPhone V3 file passes `usdchecker --arkit` across all variant combinations. Composition tests verify all 128 recipes in both arrangements, including the resolved skeletal scales and translations. Browser packaging preserves the nested variants and only changes their initial selections. These checks do not prove Quick Look applies the choices at runtime. Physical-phone camera tracking, placement, Quick Look configuration changes and animated Android AR require on-device acceptance testing; desktop checks cannot verify them.
+Owner editing is blocked by missing backend/auth access. Workspace `backend/schema.sql` and `docs/OWNER-SETUP.txt` provide a proposed Supabase foundation, required server validation/publishing work and two-owner authorization tests. It has not been deployed or tested against a real database. There is no fake login or local-only admin dashboard.
 
-## Phone acceptance test
-
-1. Open the live viewer using Safari on a current iPhone and Chrome on a compatible Android phone. The original menu QR still works.
-2. Remove several ingredients, then restore them. Confirm the top bun's sesame seeds move with it and both tomato slices toggle together.
-3. Test Separate layers, Stack burger and Reset recipe. Reload a customized URL.
-4. Enter AR. Confirm the starting ingredients and arrangement match the page.
-5. Android: toggle each ingredient and stack/separate while the camera stays open. Ensure controls do not reposition the burger.
-6. iPhone: change each Included/Removed option and Arrangement in the configuration menu. Confirm changes work without leaving AR. Update iOS if the menu is unavailable.
-7. Test all ingredients removed, restore one, and restore the full burger. Check tracking, scale and table placement. Exit and re-enter AR.
-
-## Run / publish
-
-Serve this directory with `python3 -m http.server 8765`. Use HTTPS GitHub Pages for phone AR; a computer's localhost address is not a shareable phone link. Upload changed files into the existing repository root and commit to main; Pages deploys automatically. Preserve the existing public URLs and QR code.
-
-## References
-
-- [Google model-viewer AR and DOM overlays](https://modelviewer.dev/examples/augmentedreality/)
-- [Google model-viewer animation](https://modelviewer.dev/examples/animation/)
-- [Apple Quick Look configurations, including iOS](https://developer.apple.com/videos/play/wwdc2024/10105/)
-- [Apple USD variant authoring](https://developer.apple.com/documentation/usd/creating-usd-files-for-apple-devices)
+[The pilot guide and downloadable feedback form](pilot.html) provide separate iPhone/Android tests and a QR for the public menu. The feedback form only downloads a text file; it does not submit responses online. The original Google Sites page remains published; its printed QR codes retain their original destination. `docs/GOOGLE-SITES.txt` explains how to link that page to the custom menu.
